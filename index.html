@@ -228,7 +228,7 @@ const AVOID = {knee:['lunge','bss','jack'],back:['goodmorning','swing'],shoulder
 const ST = [[60,16],[60,27],[60,57],[61,78],[62,99],[59,78],[58,99],[61,42],[62,56],[59,42],[58,56]];
 
 const EX = {
- catcow:{n:'Katze-Kuh',p:'mobility',pos:'quad',u:'reps',start:8,step:0,max:8,per:4200,key:1,
+ catcow:{n:'Katze-Kuh',p:'mobility',pos:'quad',u:'reps',start:8,step:0,max:8,per:4200,key:0,
   setup:'Hände unter den Schultern, Knie unter der Hüfte.',
   cues:['Hände unter den Schultern, Knie unter der Hüfte','Einatmen: Bauch sinkt, Blick nach vorn','Ausatmen: Rücken rund machen, Kinn zur Brust'],
   bad:['Bewegung nur im Nacken','Zu schnell, ohne Atmung'],
@@ -323,7 +323,7 @@ const EX = {
   bad:['Ellbogen beugen sich stark','Schultern ziehen hoch'],
   poses:[[[60,16],[60,27],[60,57],[56,78],[55,99],[64,78],[65,99],[54,34],[56,30],[66,34],[64,30]],
          [[60,16],[60,27],[60,57],[56,78],[55,99],[64,78],[65,99],[46,28],[33,28],[74,28],[87,28]]]},
- deadbug:{n:'Dead Bug',p:'core',pos:'back',u:'reps',sides:1,start:6,step:1,max:12,per:3200,key:2,
+ deadbug:{n:'Dead Bug',p:'core',pos:'back',u:'reps',sides:1,alt:1,start:6,step:1,max:12,per:3200,key:2,
   setup:'Arme zur Decke, Knie über der Hüfte anwinkeln.',
   cues:['Rückenlage, Arme zur Decke, Knie über der Hüfte','Gegengleich Arm und Bein langsam strecken','Unterer Rücken bleibt am Boden'],
   bad:['Hohlkreuz','Zu schnell'],
@@ -361,18 +361,20 @@ const EX = {
 };
 
 const TESTS = [
- {key:'push',title:'Liegestütze',ex:'pushup',mode:'max',choice:[['pushup','Liegestütz'],['kneepush','Knie-Liegestütz']],
-  text:'So viele saubere Liegestütze wie möglich, ohne Pause. Wenn du keine 5 schaffst, nimm die Knie-Variante.',
-  say:'So viele saubere Wiederholungen wie möglich. Tippe auf den Bildschirm, wenn du fertig bist.'},
+ {key:'push',title:'Liegestütze',ex:'pushup',mode:'paced',choice:[['pushup','Liegestütz'],['kneepush','Knie-Liegestütz']],
+  tempo:{go:2,back:1,hold:0,words:['Runter','Hoch']},
+  text:'Die Stimme gibt den Takt vor: 2 Sekunden runter, 1 Sekunde hoch, und zählt mit. Mach mit, solange die Wiederholungen sauber sind, dann tippe irgendwo auf den Bildschirm. Wenn du keine 5 schaffst, nimm die Knie-Variante.',
+  say:'Im Takt mitmachen. Tippe auf den Bildschirm, wenn es nicht mehr sauber geht.'},
  {key:'squat',title:'Kniebeugen in 60 Sekunden',ex:'squat',mode:'timer',dur:60,
   text:'So viele saubere Kniebeugen wie möglich in 60 Sekunden. Zähl im Kopf mit, die Zeit sagt die App an.',
   say:'60 Sekunden. Zähl mit.'},
  {key:'plank',title:'Unterarmstütz halten',ex:'plank',mode:'watch',
   text:'So lange halten, wie der Körper gerade bleibt. Tippe auf den Bildschirm, sobald die Hüfte absackt. Die App sagt alle 10 Sekunden die Zeit an.',
   say:'Halten. Tippe auf den Bildschirm, wenn die Hüfte absackt.'},
- {key:'bridge',title:'Glute Bridge',ex:'bridge',mode:'max',
-  text:'So viele saubere Wiederholungen wie möglich. Oben jeweils etwa 1 Sekunde halten und den Po anspannen, dann ruhig absenken. Gleiches Tempo wie beim nächsten Test, damit die Werte vergleichbar bleiben.',
-  say:'Oben jeweils eine Sekunde halten. Tippe auf den Bildschirm, wenn du fertig bist.'},
+ {key:'bridge',title:'Glute Bridge',ex:'bridge',mode:'paced',
+  tempo:{go:1.5,back:1.5,hold:1,words:['Hoch','Runter']},
+  text:'Die Stimme gibt den Takt vor: hoch, oben 1 Sekunde halten und den Po anspannen, ruhig runter. Sie zählt mit. Mach mit, solange es sauber geht, dann tippe irgendwo auf den Bildschirm.',
+  say:'Im Takt mitmachen. Tippe auf den Bildschirm, wenn es nicht mehr sauber geht.'},
  {key:'balance',title:'Einbeinstand, Augen zu',ex:'balance',mode:'watch',
   text:'Auf ein Bein stellen, Arme locker zur Seite, dann Augen schließen. Tippe auf den Bildschirm, sobald du den Fuß absetzen musst. Die App sagt die Zeit an, du musst nicht hinschauen.',
   say:'Augen zu. Tippe auf den Bildschirm, wenn du den Fuß absetzt.'},
@@ -382,14 +384,24 @@ const TESTS = [
 ];
 const REACHN = {knee:'bis zu den Knien',shin:'bis zum Schienbein',ankle:'bis zu den Knöcheln',floor:'Fingerspitzen am Boden',palm:'Handflächen am Boden'};
 const REACHS = {knee:'Knie',shin:'Schienbein',ankle:'Knöchel',floor:'Boden',palm:'Hände flach'};
+const REACHO = ['knee','shin','ankle','floor','palm'];
+/* Tempo-Coach: Sekunden für Hinweg und Rückweg, Ansagewörter. Übungen mit Haltezeit nutzen ihre rh-Wörter. Swing bleibt ohne Takt. */
+const TEMPO = {
+ squat:[2,1,'Runter','Hoch'], goblet:[2,1,'Runter','Hoch'], lunge:[2,1.5,'Runter','Hoch'], bss:[2,1.5,'Runter','Hoch'],
+ kneepush:[2,1,'Runter','Hoch'], pushup:[2,1,'Runter','Hoch'], deadbug:[2,2,'Strecken','Zurück'],
+ catcow:[3,3,'Ausatmen, rund','Einatmen'], wgs:[2.5,2,'Arm hoch','Zurück'],
+ bridge:[1.5,2], goodmorning:[2,1.5], superman:[1.5,2], bandrow:[1.5,2], tablerow:[1.5,2], pullapart:[1.5,2]
+};
+function tempoOf(id,hold){const t=TEMPO[id];if(!t)return null;const e=EX[id];
+  return {go:t[0],back:t[1],hold:hold||0,words:[t[2]||(e.rh&&e.rh[0])||'Hoch',t[3]||(e.rh&&e.rh[1])||'Runter']};}
 
 /* ---------- Speicher ---------- */
-const APP_VERSION='3a.1';
+const APP_VERSION='3b.1';
 const KEY='mattenzeit-v1';
 const DAY=864e5;
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-function freshState(){return {v:2,onboarded:false,example:false,voice:true,timeCalls:true,rhythm:true,energy:'normal',
+function freshState(){return {v:2,schema:3,deviceId:uid(),meta:{created:Date.now()},onboarded:false,example:false,voice:true,timeCalls:true,rhythm:true,headset:false,energy:'normal',
   profile:{chair:true,table:true,band:false,kb:[],pullup:false,quiet:true},
   body:{name:'',goals:['fitter'],freq:3,height:null,age:null,limits:[],measures:[]},
   levels:{squat:0,lunge:0,hinge:0,push:0,pull:0,core:0},ex:{},sessions:[],tests:[],dismissed:{},flags:{}};}
@@ -408,11 +420,28 @@ function migrate(s){
   if(s.v===1){const f=freshState();
     s=Object.assign(f,s,{v:2,onboarded:false,timeCalls:true,rhythm:true,body:f.body,tests:[]});
     s.sessions.forEach(x=>{x.id=x.id||uid();x.ts=x.ts||new Date(x.date).getTime();});}
+  /* Schema 3: sync-fähig. Jeder Eintrag hat id + ts, Bereiche haben Änderungszeitpunkte in meta. */
+  if(!s.schema||s.schema<3){
+    s.schema=3;s.deviceId=s.deviceId||uid();s.meta=s.meta||{created:Date.now()};
+    const t=x=>x.ts||(x.date?new Date(x.date).getTime():Date.now());
+    (s.sessions||[]).forEach(x=>{x.id=x.id||uid();x.ts=t(x);});
+    (s.tests||[]).forEach(x=>{x.id=x.id||uid();x.ts=t(x);});
+    ((s.body&&s.body.measures)||[]).forEach(x=>{x.id=x.id||uid();x.ts=t(x);});
+    Object.values(s.ex||{}).forEach(x=>{x.ts=x.ts||Date.now();});
+    if(s.headset===undefined)s.headset=false;
+  }
   return s;
 }
 function load(){try{const r=localStorage.getItem(KEY);if(r){const s=JSON.parse(r);if(s&&(s.v===1||s.v===2))return migrate(s);}}catch(e){}return null;}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+const SYNC_AREAS=['body','profile','levels','dismissed','flags'];
+let snap={};
+function stampChanges(){
+  state.meta=state.meta||{};
+  SYNC_AREAS.forEach(k=>{const j=JSON.stringify(state[k]);if(snap[k]!==undefined&&snap[k]!==j)state.meta[k]=Date.now();snap[k]=j;});
+}
+function save(){try{stampChanges();localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
 let state=load()||freshState();
+SYNC_AREAS.forEach(k=>snap[k]=JSON.stringify(state[k]));
 
 function exState(id){const e=EX[id];return state.ex[id]||{status:'new',dose:e.start,clear:0,hold:e.hold?e.hold.start:0};}
 function setEx(id,patch){state.ex[id]=Object.assign({},exState(id),patch,{ts:Date.now()});}
@@ -492,7 +521,8 @@ function stepsOf(plan){
 }
 function stepTime(s){const e=EX[s.id];const k=e.sides?2:1;
   if(e.u==='sec')return s.dose*k+(e.sides?4:0)+3;
-  if(s.hold&&state.rhythm)return s.dose*(3.6+s.hold+0.4)+3;
+  const tp=state.rhythm&&tempoOf(s.id,s.hold);
+  if(tp){const n=e.alt?s.dose*2:s.dose*k;return n*(tp.go+tp.back+tp.hold+0.4)+(e.sides&&!e.alt?4:0)+2;}
   return s.dose*3.2*k+6;}
 function doseText(e,d){return e.u==='sec'?`${d} s`:`${d}`;}
 function doseUnit(e){return (e.u==='sec'?'Sekunden':'Wiederholungen')+(e.sides?' pro Seite':'');}
@@ -540,9 +570,9 @@ function drawFig(svg,t){
 }
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 let lastFrame=0;
-function rhythmT(){const r=ui.run;if(!r||!r.rh)return null;const rh=r.rh;const now=Date.now();
-  const k=clamp((now-rh.t0)/(rh.t1-rh.t0||1),0,1);
-  return rh.ph==='go'?k:rh.ph==='hold'?1:rh.ph==='back'?1-k:0;}
+function activePacer(){if(view==='player'&&ui.run&&ui.run.rh)return ui.run.rh;if(view==='test'&&ui.test&&ui.test.pacer)return ui.test.pacer;return null;}
+function rhythmT(){const p=activePacer();if(!p)return null;const k=clamp((Date.now()-p.t0)/(p.t1-p.t0||1),0,1);
+  return p.ph==='go'?k:p.ph==='hold'?1:p.ph==='back'?1-k:0;}
 function frame(now){
   if(now-lastFrame>30){lastFrame=now;
     document.querySelectorAll('svg.fig[data-anim]').forEach(svg=>{
@@ -671,7 +701,7 @@ function commitMeasure(m){
   if(!m||(m.weight==null&&m.waist==null))return;
   const ms=state.body.measures,last=ms[ms.length-1];
   if(last&&new Date(last.date).toDateString()===new Date().toDateString())ms.pop();
-  ms.push({id:uid(),date:new Date().toISOString(),weight:m.weight??null,waist:m.waist??null});
+  ms.push({id:uid(),ts:Date.now(),date:new Date().toISOString(),weight:m.weight??null,waist:m.waist??null});
 }
 function finishOnboard(){
   if(state.example){state=Object.assign(freshState(),{profile:state.profile,body:state.body,voice:state.voice});}
@@ -681,7 +711,7 @@ function finishOnboard(){
 /* ---------- Einstufungstest ---------- */
 function startTest(){
   hush();keepAwake(true);
-  ui.test={i:0,phase:'intro',choice:'pushup',val:null,results:{},lastEnd:null};
+  ui.test={i:0,phase:'intro',choice:'pushup',val:null,results:{},lastEnd:null};ui.tdMeasureDone=false;headsetOn();
   go('test');
 }
 function curTest(){return TESTS[ui.test.i];}
@@ -698,7 +728,9 @@ function testTick(){
     if(left<=3&&left>0&&!T.said['c'+left]){T.said['c'+left]=1;beep(left===1?1040:780);}
     if(now>=T.end){T.phase='run';T.start=now;T.said={};
       if(t.mode==='timer')T.end=now+t.dur*1000;
-      say(`Los. ${t.say}`,{interrupt:true});render();}
+      say(`Los. ${t.say}`,{interrupt:true});
+      if(t.mode==='paced'){T.pacer=makePacer({id:T.choice&&t.key==='push'?T.choice:t.ex,tempo:t.tempo,reps:Infinity,test:true});T.pacer.t1=now+2600;}
+      render();}
     return;}
   if(T.phase!=='run')return;
   const el=document.getElementById('clock');
@@ -709,16 +741,18 @@ function testTick(){
   else if(t.mode==='watch'){const s=Math.floor((now-T.start)/1000);if(el)el.textContent=fmt(s);
     if(s>0&&s%10===0&&!T.said['w'+s]){T.said['w'+s]=1;say(secs(s),{optional:true});}}
   else if(t.mode==='max'){const s=Math.floor((now-T.start)/1000);if(el)el.textContent=fmt(s);}
+  else if(t.mode==='paced'&&T.pacer){pacerStep(T.pacer);if(T.pacer.counted>=150)testStop();}
 }
 function testStop(){
   const T=ui.test,t=curTest();clearInterval(tick);beep(1300,.2);
   if(t.mode==='watch'){T.val=Math.max(1,Math.round((Date.now()-T.start)/1000));say(`${secs(T.val)}. Gut.`,{interrupt:true});}
+  else if(t.mode==='paced'){T.val=T.pacer?T.pacer.counted:0;T.pacer=null;say(`${T.val} Wiederholungen. Gut.`,{interrupt:true});}
   else{T.val=t.key==='push'?10:15;say('Gut. Wie viele waren es?',{interrupt:true});}
   T.phase='input';render();
 }
 function testSave(){
   const T=ui.test,t=curTest();
-  T.results[t.key]=t.key==='push'?{n:T.val,variant:T.choice}:t.mode==='choice'?{v:T.val}:{n:T.val};
+  T.results[t.key]=t.key==='push'?{n:T.val,variant:T.choice,paced:true}:t.mode==='choice'?{v:T.val}:t.mode==='paced'?{n:T.val,paced:true}:{n:T.val};
   T.lastEnd=Date.now();
   if(T.i<TESTS.length-1){T.i++;T.phase='intro';T.val=null;
     const nt=curTest();say(`Nächster Test: ${nt.title}. Erhol dich kurz.`,{interrupt:true});render();window.scrollTo(0,0);}
@@ -745,13 +779,19 @@ function vTest(){
   if(T.phase==='run'){
     if(t.mode==='timer')return `<div class="player">${head}<h1 style="text-align:center">${t.title}</h1><div class="stage">${figHTML(figId,true)}</div>
       <div class="clock" id="clock">${fmt(Math.max(0,Math.ceil((T.end-Date.now())/1000)))}</div><p class="cue">Zähl mit. Danach trägst du die Zahl ein.</p></div>`;
+    if(t.mode==='paced'){const p=T.pacer;
+      return `<div class="player">${head}
+      <button class="tapzone" data-act="teststop"><h1>${t.title}</h1><div class="stage">${figHTML(figId,true,'data-sync="1"')}</div>
+      <div class="rh" id="rhph">${p?pacerWord(p):''}</div>
+      <div class="target"><div class="n num" id="rhrep">${p?p.counted:0}</div><span class="muted">saubere Wiederholungen</span></div>
+      <span class="taphint">Irgendwo tippen, wenn es nicht mehr sauber geht. Die App hat mitgezählt.</span></button>${headsetLine()}</div>`;}
     return `<div class="player">${head}
       <button class="tapzone" data-act="teststop"><h1>${t.title}</h1><div class="stage">${figHTML(figId,true)}</div>
       <div class="clock" id="clock">0:00</div><span class="taphint">Irgendwo tippen, wenn du fertig bist</span></button></div>`;}
   /* input */
   const unit=t.mode==='watch'?'Sekunden':'Wiederholungen';
   return `<div class="player">${head}<h1>${t.title}</h1>
-    <p class="muted">${t.mode==='watch'?'Gemessene Zeit. Du kannst sie korrigieren.':'Wie viele saubere Wiederholungen hast du geschafft?'}</p>
+    <p class="muted">${t.mode==='watch'?'Gemessene Zeit. Du kannst sie korrigieren.':t.mode==='paced'?'Die App hat mitgezählt. Wenn die letzten nicht mehr sauber waren, zieh sie ab.':'Wie viele saubere Wiederholungen hast du geschafft?'}</p>
     <div class="card"><div class="stepper"><button data-act="tdec" aria-label="Weniger">−</button><span class="val" id="tval">${T.val}</span><button data-act="tinc" aria-label="Mehr">+</button></div>
     <p class="muted" style="text-align:center">${unit}</p></div>
     <button class="btn primary block big" data-act="tsave">${T.i<TESTS.length-1?'Speichern und weiter':'Speichern und auswerten'}</button></div>`;
@@ -760,43 +800,98 @@ function applyTest(){
   const R=ui.test.results;const out=[];const now=Date.now();
   if(state.example)state=Object.assign(freshState(),{profile:state.profile,body:state.body,voice:state.voice});
   state.onboarded=true;
+  const prevTest=state.tests[state.tests.length-1]||null;
+  const repeat=!!prevTest;
+  /* Beim Wiederholungstest nichts verschlechtern: höhere Dosis, Stufe und Status bleiben erhalten. */
+  const up=(id,patch)=>{const cur=state.ex[id];
+    if(repeat&&cur){patch=Object.assign({},patch);
+      if((cur.dose||0)>(patch.dose||0))patch.dose=cur.dose;
+      if(cur.status==='known')patch.status='known';
+      if((cur.hold||0)>(patch.hold||0))patch.hold=cur.hold;
+      if((cur.clear||0)>(patch.clear||0))patch.clear=cur.clear;}
+    setEx(id,patch);return exState(id);};
+  const lvl=(p,v)=>{state.levels[p]=repeat?Math.max(state.levels[p]||0,v):v;return state.levels[p];};
   const items=[];
-  if(R.push){const n=R.push.n;
-    if(R.push.variant==='pushup'&&n>=5){state.levels.push=1;const d=clamp(Math.round(n*.6),5,25);setEx('pushup',{status:'known',dose:d,clear:2});
-      out.push({t:'Liegestütze',v:`${n}`,c:`Training mit Liegestützen, ${d} pro Satz.`});items.push({id:'pushup',sets:1,dose:n});}
-    else if(R.push.variant==='kneepush'&&n>=20){state.levels.push=1;setEx('kneepush',{status:'known',dose:20,clear:2});setEx('pushup',{status:'new',dose:5});
-      out.push({t:'Knie-Liegestütze',v:`${n}`,c:'Stark! Du steigst direkt bei normalen Liegestützen ein, mit 5 pro Satz.'});items.push({id:'kneepush',sets:1,dose:n});}
-    else{state.levels.push=0;const d=clamp(Math.round(n*.6),4,20);setEx('kneepush',{status:'known',dose:d,clear:2});
-      out.push({t:R.push.variant==='pushup'?'Liegestütze':'Knie-Liegestütze',v:`${n}`,c:`Start mit Knie-Liegestützen, ${d} pro Satz. Normale Liegestütze kommen, sobald 20 klappen.`});items.push({id:R.push.variant,sets:1,dose:n});}}
-  if(R.squat){const n=R.squat.n;const d=clamp(Math.round(n*.5),8,25);setEx('squat',{status:'known',dose:d,clear:2});
-    let c=`Training mit ${d} Kniebeugen pro Satz.`;
-    if(n>=40&&state.profile.kb.length){state.levels.squat=1;c+=' Mit Kettlebell geht es direkt zum Goblet Squat weiter.';}
+  if(R.push){const n=R.push.n;const v=R.push.variant;
+    if(v==='pushup'&&n>=5){lvl('push',1);const st=up('pushup',{status:'known',dose:clamp(Math.round(n*.6),5,25),clear:2});
+      out.push({t:'Liegestütze',v:`${n}`,c:`Training mit Liegestützen, ${st.dose} pro Satz.`});}
+    else if(v==='kneepush'&&n>=20){lvl('push',1);up('kneepush',{status:'known',dose:20,clear:2});
+      if(!state.ex.pushup)setEx('pushup',{status:'new',dose:5});
+      out.push({t:'Knie-Liegestütze',v:`${n}`,c:`Stark! Weiter mit normalen Liegestützen, ${exState('pushup').dose} pro Satz.`});}
+    else{const L=lvl('push',0);const st=up('kneepush',{status:'known',dose:clamp(Math.round(n*.6),4,20),clear:2});
+      out.push({t:v==='pushup'?'Liegestütze':'Knie-Liegestütze',v:`${n}`,c:L>0?`Du bleibst bei Liegestützen (${exState('pushup').dose} pro Satz).`:`Knie-Liegestütze, ${st.dose} pro Satz. Normale Liegestütze kommen, sobald 20 klappen.`});}
+    items.push({id:v,sets:1,dose:n});}
+  if(R.squat){const n=R.squat.n;const st=up('squat',{status:'known',dose:clamp(Math.round(n*.5),8,25),clear:2});
+    let c=`Training mit ${st.dose} Kniebeugen pro Satz.`;
+    if(n>=40&&state.profile.kb.length&&!(state.levels.squat>=1)){lvl('squat',1);c+=' Mit Kettlebell geht es zum Goblet Squat weiter.';}
     out.push({t:'Kniebeugen in 60 s',v:`${n}`,c});items.push({id:'squat',sets:1,dose:n});}
-  if(R.plank){const s=R.plank.n;
-    if(s<20){state.levels.core=0;out.push({t:'Unterarmstütz',v:`${s} s`,c:'Start mit Dead Bug, der Stütz kommt später dazu.'});}
-    else{state.levels.core=s>=75?2:1;const d=clamp(Math.round(s*.6/5)*5,20,75);setEx('plank',{status:'known',dose:d,clear:2});
-      out.push({t:'Unterarmstütz',v:`${s} s`,c:`Training mit ${d} Sekunden Stütz.${s>=75?' Seitstütz ist freigeschaltet.':''}`});}
-    items.push({id:'plank',sets:1,dose:s});}
-  if(R.bridge){const n=R.bridge.n;const d=clamp(Math.round(n*.6),8,25);setEx('bridge',{status:'known',dose:d,clear:2,hold:n>=25?3:2});
-    if(n>=30)state.levels.hinge=1;
-    out.push({t:'Glute Bridge',v:`${n}`,c:`Training mit ${d} Wiederholungen, oben ${n>=25?3:2} Sekunden halten.${n>=30?' Good Morning ist freigeschaltet.':''}`});items.push({id:'bridge',sets:1,dose:n});}
-  if(R.balance){const s=R.balance.n;const d=s<10?6:s<25?8:10;setEx('lunge',{status:'new',dose:d});
-    out.push({t:'Einbeinstand, Augen zu',v:`${s} s`,c:s<10?'Gleichgewicht ausbaufähig: Ausfallschritte starten mit 6 pro Seite.':`Ausfallschritte starten mit ${d} pro Seite.`});}
-  if(R.reach){const v=R.reach.v;const stiff=['knee','shin'].includes(v);if(stiff)state.flags.mobility=true;
+  if(R.plank){const sec=R.plank.n;
+    if(sec<20&&!repeat){lvl('core',0);out.push({t:'Unterarmstütz',v:`${sec} s`,c:'Start mit Dead Bug, der Stütz kommt später dazu.'});}
+    else{const L=lvl('core',sec>=75?2:sec>=20?1:0);const st=up('plank',{status:'known',dose:clamp(Math.round(sec*.6/5)*5,20,75),clear:2});
+      out.push({t:'Unterarmstütz',v:`${sec} s`,c:`Training mit ${st.dose} Sekunden Stütz.${L>=2?' Seitstütz ist freigeschaltet.':''}`});}
+    items.push({id:'plank',sets:1,dose:sec});}
+  if(R.bridge){const n=R.bridge.n;const st=up('bridge',{status:'known',dose:clamp(Math.round(n*.6),8,25),clear:2,hold:n>=25?3:2});
+    const L=n>=30?lvl('hinge',1):(state.levels.hinge||0);
+    out.push({t:'Glute Bridge',v:`${n}`,c:`Training mit ${st.dose} Wiederholungen, oben ${st.hold||2} Sekunden halten.${n>=30&&L>=1?' Good Morning ist freigeschaltet.':''}`});items.push({id:'bridge',sets:1,dose:n});}
+  if(R.balance){const sec=R.balance.n;const d=sec<10?6:sec<25?8:10;
+    if(!state.ex.lunge)setEx('lunge',{status:'new',dose:d});else up('lunge',{dose:d});
+    out.push({t:'Einbeinstand, Augen zu',v:`${sec} s`,c:sec<10?'Gleichgewicht ausbaufähig: Ausfallschritte trainieren es mit.':`Ausfallschritte mit ${exState('lunge').dose} pro Seite.`});}
+  if(R.reach){const v=R.reach.v;const stiff=['knee','shin'].includes(v);state.flags.mobility=stiff;
     out.push({t:'Vorbeuge',v:REACHS[v],c:stiff?'Beinrückseite eher fest: Mobilitätsübungen kommen öfter dran.':'Gute Beweglichkeit in der Beinrückseite.'});}
-  state.tests.push({id:uid(),date:new Date().toISOString(),results:R});
-  state.sessions.push({id:uid(),ts:now,date:new Date().toISOString(),min:10,rpe:7,type:'test',items});
-  save();keepAwake(false);ui.plan=null;ui.testOut=out;go('testdone');
-  say('Test abgeschlossen. Gut gemacht.',{interrupt:true});
+  const rec={id:uid(),ts:now,date:new Date(now).toISOString(),results:R};
+  state.tests.push(rec);
+  state.sessions.push({id:uid(),ts:now,date:new Date(now).toISOString(),min:10,rpe:7,type:'test',items});
+  save();keepAwake(false);headsetOff();ui.plan=null;ui.testOut=out;ui.testCmp=prevTest?compareTests(prevTest,rec):null;ui.tdMeasure=null;go('testdone');
+  say(prevTest?'Test abgeschlossen. Schau dir den Vergleich an.':'Test abgeschlossen. Gut gemacht.',{interrupt:true});
+}
+/* Vorher-Nachher: eine Zeile pro Test, mit Unterschied und ob er besser ist. */
+function compareTests(A,B){
+  const a=A.results,b=B.results;const rows=[];
+  const num=(t,x,y,unit,note)=>{if(!x||!y)return;const d=y.n-x.n;rows.push({t,before:`${x.n}${unit}`,after:`${y.n}${unit}`,diff:d===0?'±0':(d>0?'+':'')+d+unit,k:d>0?'good':d<0?'bad':'same',note});};
+  if(a.push&&b.push){
+    if(a.push.variant===b.push.variant){num(b.push.variant==='kneepush'?'Knie-Liegestütze':'Liegestütze',a.push,b.push,'',(!a.push.paced&&b.push.paced)?'Diesmal im Takt, vorher frei: nur bedingt vergleichbar.':'');}
+    else rows.push({t:'Liegestütze',before:`${a.push.n} ${a.push.variant==='kneepush'?'Knie':'normal'}`,after:`${b.push.n} ${b.push.variant==='kneepush'?'Knie':'normal'}`,diff:b.push.variant==='pushup'?'Aufstieg':'Variante',k:b.push.variant==='pushup'?'good':'same',note:'Andere Variante als beim letzten Test.'});}
+  num('Kniebeugen in 60 s',a.squat,b.squat,'');
+  num('Unterarmstütz',a.plank,b.plank,' s');
+  if(a.bridge&&b.bridge)num('Glute Bridge',a.bridge,b.bridge,'',(!a.bridge.paced&&b.bridge.paced)?'Diesmal im Takt, vorher frei: nur bedingt vergleichbar.':'');
+  num('Einbeinstand, Augen zu',a.balance,b.balance,' s');
+  if(a.reach&&b.reach){const d=REACHO.indexOf(b.reach.v)-REACHO.indexOf(a.reach.v);
+    rows.push({t:'Vorbeuge',before:REACHS[a.reach.v],after:REACHS[b.reach.v],diff:d>0?'weiter':d<0?'weniger':'gleich',k:d>0?'good':d<0?'bad':'same'});}
+  const days=Math.round(((B.ts||new Date(B.date).getTime())-(A.ts||new Date(A.date).getTime()))/DAY);
+  return {date:A.date,days,rows,better:rows.filter(r=>r.k==='good').length};
+}
+function compareHTML(C){
+  const col={good:'var(--good)',bad:'var(--bad)',same:'var(--muted)'};
+  const notes=[...new Set(C.rows.map(r=>r.note).filter(Boolean))];
+  return `<table class="res">${C.rows.map(r=>`<tr><td><b>${esc(r.t)}</b><br><span class="small muted num">${esc(r.before)} → ${esc(r.after)}</span></td>
+    <td class="v num" style="text-align:right;color:${col[r.k]}">${esc(r.diff)}</td></tr>`).join('')}</table>
+    ${notes.length?`<p class="small muted">${notes.map(esc).join(' ')}</p>`:''}`;
+}
+function measureCompareHTML(){
+  const ms=state.body.measures;if(ms.length<2)return '';const a=ms[0],b=ms[ms.length-1];
+  const row=(t,k,u,lowerBetter)=>{if(a[k]==null||b[k]==null)return '';const d=+(b[k]-a[k]).toFixed(1);
+    const good=lowerBetter?d<0:d>0;const c=d===0?'var(--muted)':good?'var(--good)':'var(--warn)';
+    return `<tr><td><b>${t}</b><br><span class="small muted num">${String(a[k]).replace('.',',')} → ${String(b[k]).replace('.',',')} ${u}</span></td><td class="v num" style="text-align:right;color:${c}">${d>0?'+':''}${String(d).replace('.',',')} ${u}</td></tr>`;};
+  const rows=row('Gewicht','weight','kg',hasGoal('abnehmen'))+row('Bauchumfang','waist','cm',true);
+  return rows?`<table class="res">${rows}</table><p class="small muted">Seit ${new Date(a.date).toLocaleDateString('de-DE')}.</p>`:'';
 }
 function vTestDone(){
-  const name=state.body.name?`, ${esc(state.body.name)}`:'';
-  return `<header class="stack" style="gap:6px"><span class="eyebrow">Einstufung gespeichert</span><h1>Geschafft${name}!</h1>
-   <p class="muted">Das sind deine Startwerte. In 4–6 Wochen fragt die App nach einem Wiederholungstest, dann siehst du den Unterschied.</p></header>
-   <section class="card"><table class="res">${ui.testOut.map(o=>`<tr><td class="v num">${esc(o.v)}</td><td><b>${esc(o.t)}</b><br><span class="small">${esc(o.c)}</span></td></tr>`).join('')}</table></section>
+  const name=state.body.name?`, ${esc(state.body.name)}`:'';const C=ui.testCmp;
+  const ms=state.body.measures;const lastM=ms[ms.length-1];
+  const askMeasure=!lastM||Date.now()-new Date(lastM.date).getTime()>21*DAY;
+  return `<header class="stack" style="gap:6px"><span class="eyebrow">${C?'Wiederholungstest gespeichert':'Einstufung gespeichert'}</span><h1>Geschafft${name}!</h1>
+   <p class="muted">${C?`Verglichen mit deinem Test vor ${C.days} ${C.days===1?'Tag':'Tagen'}: ${C.better} von ${C.rows.length} Werten besser.`:'Das sind deine Startwerte. In 4–6 Wochen fragt die App nach einem Wiederholungstest, dann siehst du den Unterschied.'}</p></header>
+   ${C?`<section class="card"><h3>Vorher → jetzt</h3>${compareHTML(C)}</section>`:''}
+   <section class="card"><h3>${C?'Was das fürs Training heißt':'Deine Startwerte'}</h3><table class="res">${ui.testOut.map(o=>`<tr><td class="v num">${esc(o.v)}</td><td><b>${esc(o.t)}</b><br><span class="small">${esc(o.c)}</span></td></tr>`).join('')}</table>
+   ${C?'<p class="small muted">Trainingsstände, die du dir seit dem letzten Test erarbeitet hast, bleiben erhalten. Der Test hebt sie nur an, wenn er mehr zeigt.</p>':''}</section>
+   ${askMeasure&&!ui.tdMeasureDone?`<section class="card"><h3>Körperwerte aktualisieren?</h3><p class="small muted">Freiwillig. Passt gut zum Test, dann siehst du beides im Vergleich.</p>
+     <div class="grid2"><div class="field"><label for="td-weight">Gewicht (kg)</label><input type="number" inputmode="decimal" step="0.1" id="td-weight"></div>
+     <div class="field"><label for="td-waist">Bauchumfang (cm)</label><input type="number" inputmode="decimal" step="0.5" id="td-waist"></div></div>
+     <button class="btn" data-act="tdmeasure">Speichern</button></section>`:''}
+   ${measureCompareHTML()?`<section class="card"><h3>Körperwerte im Verlauf</h3>${measureCompareHTML()}</section>`:''}
    ${bodyStats().length?`<section class="card"><h3>Körperwerte</h3>${bodyStatsHTML()}</section>`:''}
-   <section class="card"><h3>Ziehen wurde nicht getestet</h3><p class="small muted">Ohne Gerät gibt es dafür keinen guten Test. Du startest mit Superman, die App steigert nach deinem Feedback.</p></section>
-   <button class="btn primary block big" data-act="tab" data-v="today">Zum ersten Trainingsvorschlag</button>`;
+   ${C?'':`<section class="card"><h3>Ziehen wurde nicht getestet</h3><p class="small muted">Ohne Gerät gibt es dafür keinen guten Test. Du startest mit Superman, die App steigert nach deinem Feedback.</p></section>`}
+   <button class="btn primary block big" data-act="tab" data-v="today">${C?'Zum Training':'Zum ersten Trainingsvorschlag'}</button>`;
 }
 
 /* ---------- Heute ---------- */
@@ -831,7 +926,10 @@ function vToday(){
       <button class="chip" data-act="quiet" aria-pressed="${state.profile.quiet}">Leise, ohne Sprünge</button>
       <button class="chip" data-act="voice" aria-pressed="${state.voice}">Sprachansage</button>
       <button class="chip" data-act="timecalls" aria-pressed="${state.timeCalls}">Restzeit ansagen</button>
-      <button class="chip" data-act="rhythm" aria-pressed="${state.rhythm}">Halte-Rhythmus vorgeben</button></div></div>
+      <button class="chip" data-act="rhythm" aria-pressed="${state.rhythm}">Tempo vorgeben</button>
+      <button class="chip" data-act="headset" aria-pressed="${!!state.headset}">Kopfhörer-Taste (Versuch)</button></div>
+      ${state.rhythm?'<p class="small muted">Tempo vorgeben: Die Stimme sagt jede Wiederholung an („Runter … Hoch“) und geht am Ende des Satzes automatisch weiter.</p>':''}
+      ${state.headset?'<p class="small muted">Kopfhörer-Taste: Einmal auf den AirPod tippen oder die Taste am Kabel drücken heißt „Geschafft“ bzw. „Weiter“. Das ist ein Versuch. Sag Bescheid, ob es bei dir klappt.</p>':''}</div>
   </section>
   <section class="card">
     <div class="row between"><h2>Dein Training</h2><span class="dose num">ca. ${plan.est} Min.</span></div>
@@ -964,7 +1062,7 @@ function startRun(){
   hush();
   const steps=stepsOf(ui.plan);
   ui.run={steps,i:0,phase:'rest',paused:false,left:0,started:Date.now(),fired:{},events:[],cue:''};
-  keepAwake(true);
+  keepAwake(true);headsetOn();
   const s=steps[0],e=EX[s.id];const R=15;
   ui.run.end=Date.now()+R*1000;
   const main=ui.plan.items.length;
@@ -1005,33 +1103,46 @@ function beginWork(){
   r.phase='work';r.fired={};r.side=1;r.events=[];r.rh=null;
   r.cue=e.cues[e.key||0];
   if(e.u==='sec'){r.end=Date.now()+s.dose*1000;say(`Los. ${r.cue}.`,{interrupt:true});r.events=timeEvents(s.dose,false);}
-  else if(s.hold&&state.rhythm&&e.rh){r.end=0;say('Los.',{interrupt:true});
-    r.rh={rep:1,ph:'pre',t0:Date.now(),t1:Date.now()+900,said:{}};}
+  else if(state.rhythm&&tempoOf(s.id,s.hold)){r.end=0;say('Los.',{interrupt:true});
+    r.rh=makePacer({id:s.id,tempo:tempoOf(s.id,s.hold),reps:e.alt?s.dose*2:s.dose,sides:e.sides&&!e.alt,
+      onDone:()=>{beep(1300,.25);r.rh=null;startNext();}});}
   else{r.end=0;say(`Los. ${r.cue}.`,{interrupt:true});}
   render();
 }
-function rhStep(){
-  const r=ui.run,s=cur(),e=EX[s.id],rh=r.rh;const now=Date.now();
-  if(now<rh.t1){
-    if(rh.ph==='hold'){const el=Math.floor((now-rh.t0)/1000);const left=s.hold-el;
-      if(el>0&&left>0&&!rh.said['h'+rh.rep+'_'+el]){rh.said['h'+rh.rep+'_'+el]=1;say(String(left),{interrupt:true,rate:1.15});}}
+/* ---------- Takt-Baustein: Training (Tempo-Coach) und Test ---------- */
+function makePacer(o){const now=Date.now();
+  return {id:o.id,tempo:o.tempo,reps:o.reps,sides:!!o.sides,test:!!o.test,onDone:o.onDone,side:1,rep:1,counted:0,ph:'pre',t0:now,t1:now+900,said:{},nextWord:null};}
+function pacerStep(p){
+  const now=Date.now();const T=p.tempo;const W=T.words;
+  if(now<p.t1){
+    if(p.ph==='hold'&&T.hold>1){const el=Math.floor((now-p.t0)/1000);const left=T.hold-el;
+      if(el>0&&left>0&&!p.said[p.side+'h'+p.rep+'_'+el]){p.said[p.side+'h'+p.rep+'_'+el]=1;say(String(left),{interrupt:true,rate:1.15});}}
     return;}
-  const setPh=(ph,dur,word)=>{rh.ph=ph;rh.t0=now;rh.t1=now+dur;if(word)say(word,{interrupt:true,rate:1.1});updateRh();};
-  if(rh.ph==='pre'){setPh('go',1600,s.dose===1?`Letzte. ${e.rh[0]}`:e.rh[0]);return;}
-  if(rh.ph==='go'){setPh('hold',s.hold*1000,'Halten');return;}
-  if(rh.ph==='hold'){setPh('back',2000,e.rh[1]);return;}
-  if(rh.ph==='back'){
-    if(rh.rep>=s.dose){beep(1300,.25);r.rh=null;startNext();return;}
-    rh.rep++;const last=rh.rep===s.dose;
-    rh.ph='gap';rh.t0=now;rh.t1=now+400;updateRh();
-    rh.nextWord=last?`Letzte. ${e.rh[0]}`:(rh.rep===Math.ceil(s.dose/2)&&s.dose>=8?`Halbzeit. ${e.rh[0]}`:e.rh[0]);return;}
-  if(rh.ph==='gap'){setPh('go',1600,rh.nextWord);return;}
+  const setPh=(ph,dur,word)=>{p.ph=ph;p.t0=now;p.t1=now+dur;if(word)say(word,{interrupt:true,rate:1.1});updatePacerUI(p);};
+  const lead=()=>{if(p.test)return W[0];
+    if(p.rep===p.reps)return `Letzte. ${W[0]}`;
+    if(p.reps>=8&&p.rep===Math.floor(p.reps/2)+1)return `Halbzeit. ${W[0]}`;
+    return W[0];};
+  if(p.ph==='pre'){setPh('go',T.go*1000,lead());return;}
+  if(p.ph==='go'){if(T.hold>0)setPh('hold',T.hold*1000,'Halten');else setPh('back',T.back*1000,W[1]);return;}
+  if(p.ph==='hold'){setPh('back',T.back*1000,W[1]);return;}
+  if(p.ph==='back'){
+    p.counted=p.rep;
+    if(p.test){say(String(p.rep),{interrupt:true,rate:1.15});}
+    if(p.rep>=p.reps){
+      if(p.sides&&p.side===1){p.side=2;p.rep=1;beep(1300,.2);say('Seite wechseln.',{interrupt:true});setPh('switch',4000,null);return;}
+      p.ph='done';updatePacerUI(p);if(p.onDone)p.onDone();return;}
+    p.rep++;setPh('gap',p.test?750:400,null);return;}
+  if(p.ph==='gap'){setPh('go',T.go*1000,lead());return;}
+  if(p.ph==='switch'){say('Und los.',{interrupt:true});p.ph='pre';p.t0=now;p.t1=now+900;updatePacerUI(p);return;}
 }
-function updateRh(){const r=ui.run,rh=r.rh;if(!rh)return;const s=cur(),e=EX[s.id];
-  const a=document.getElementById('rhrep');if(a)a.textContent=`${rh.rep}`;
-  const b=document.getElementById('rhph');if(b)b.textContent=rh.ph==='go'?e.rh[0]:rh.ph==='hold'?'Halten':rh.ph==='back'?e.rh[1]:'';}
+function pacerWord(p){const W=p.tempo.words;return p.ph==='go'?W[0]:p.ph==='hold'?'Halten':p.ph==='back'?W[1]:p.ph==='switch'?'Seite wechseln':'';}
+function updatePacerUI(p){
+  const a=document.getElementById('rhrep');if(a)a.textContent=p.test?String(p.counted):String(p.rep);
+  const b=document.getElementById('rhph');if(b)b.textContent=pacerWord(p);
+  const c=document.getElementById('rhside');if(c)c.textContent=p.sides?`Seite ${p.side} von 2`:'';}
 function startNext(){const r=ui.run;if(r.i>=r.steps.length-1){finishRun();return;}startRest();}
-function finishRun(){clearInterval(tick);keepAwake(false);
+function finishRun(){clearInterval(tick);keepAwake(false);headsetOff();
   const r=ui.run;const min=Math.max(1,Math.round((Date.now()-r.started)/60000));
   say('Geschafft. Das war dein Training. Gut gemacht.',{interrupt:true});
   const ids=[...ui.plan.items.map(i=>i.id)];if(ui.plan.finisher)ids.push(ui.plan.finisher);
@@ -1040,7 +1151,7 @@ function finishRun(){clearInterval(tick);keepAwake(false);
 function onTick(){
   const r=ui.run;if(!r||r.paused||view!=='player')return;
   const now=Date.now();
-  if(r.phase==='work'&&r.rh){rhStep();return;}
+  if(r.phase==='work'&&r.rh){pacerStep(r.rh);return;}
   if(r.phase==='work'&&!r.end)return;
   if(r.switching){if(now<r.switching)return;r.switching=0;r.end=now+cur().dose*1000;r.fired={};say('Und los.',{interrupt:true});render();return;}
   const left=Math.max(0,Math.ceil((r.end-now)/1000));
@@ -1074,7 +1185,7 @@ function vPlayer(){
         ${ht?`<span class="small muted">${ht}</span>`:''}
         ${s.learn?'<span class="tag learning" style="align-self:flex-start">Lernsatz: leichter</span>':''}</div></div>
         <div class="setup"><b>In Position:</b> ${esc(r.setupText||e.setup)}</div></div>
-      <div class="row"><button class="btn grow" data-act="plus10">+10 s</button><button class="btn primary grow" data-act="skiprest">Weiter</button></div></div>`;
+      <div class="row"><button class="btn grow" data-act="plus10">+10 s</button><button class="btn primary grow" data-act="skiprest">Weiter</button></div>${headsetLine()}</div>`;
   }
   const top=`<div class="row between"><span class="eyebrow">${esc(s.tag)}</span>${s.learn?'<span class="tag learning">Lernsatz: langsam und sauber</span>':''}</div>`;
   if(e.u==='sec'){
@@ -1084,22 +1195,24 @@ function vPlayer(){
     <div class="clock" id="clock">${r.switching?'Wechsel':fmt(left)}</div>
     <p class="small muted" style="text-align:center">${e.sides?`Seite ${r.side} von 2`:'Sekunden'}</p>
     <p class="cue">${esc(r.cue)}</p>
-    <div class="row"><button class="btn grow" data-act="pause">${r.paused?'Fortsetzen':'Pause'}</button><button class="btn primary grow big" data-act="done">Fertig</button></div></div>`;
+    <div class="row"><button class="btn grow" data-act="pause">${r.paused?'Fortsetzen':'Pause'}</button><button class="btn primary grow big" data-act="done">Fertig</button></div>${headsetLine()}</div>`;
   }
-  if(r.rh){
+  if(r.rh){const p=r.rh;
     return `<div class="player">${head}${quit}${top}
     <button class="tapzone" data-act="done"><h1>${e.n}</h1>
       <div class="stage">${figHTML(s.id,true,'data-sync="1"')}</div>
-      <div class="rh" id="rhph"></div>
-      <div class="target"><div class="n"><span id="rhrep">${r.rh.rep}</span><span class="muted" style="font-size:2.4rem"> / ${s.dose}</span></div><span class="muted">${ht}</span></div>
-      <span class="taphint">Die Stimme gibt den Takt vor und geht am Ende automatisch weiter. Irgendwo tippen beendet den Satz früher.</span></button></div>`;
+      <div class="rh" id="rhph">${pacerWord(p)}</div>
+      <div class="target"><div class="n"><span id="rhrep">${p.rep}</span><span class="muted" style="font-size:2.4rem"> / ${p.reps}</span></div>
+        <span class="muted"><span id="rhside">${p.sides?`Seite ${p.side} von 2`:''}</span>${p.sides&&ht?' · ':''}${ht}${e.alt?'abwechselnd links und rechts':''}</span></div>
+      <p class="cue">${esc(r.cue)}</p>
+      <span class="taphint">Die Stimme gibt den Takt vor und geht am Ende automatisch weiter. Irgendwo tippen beendet den Satz früher.</span></button>${headsetLine()}</div>`;
   }
   return `<div class="player">${head}${quit}${top}
     <button class="tapzone" data-act="done"><h1>${e.n}</h1>
     <div class="stage">${figHTML(s.id,true)}</div>
     <div class="target"><div class="n num">${s.dose}</div><span class="muted">${doseUnit(e)}${ht?`, ${ht}`:''}</span></div>
     <p class="cue">${esc(r.cue)}</p>
-    <span class="taphint">Irgendwo tippen, wenn du fertig bist</span></button></div>`;
+    <span class="taphint">Irgendwo tippen, wenn du fertig bist</span></button>${headsetLine()}</div>`;
 }
 
 /* ---------- Feedback ---------- */
@@ -1201,7 +1314,8 @@ function vProgress(){
     :'<p class="small muted">Noch keine Werte. Gewicht und Bauchumfang sind freiwillig und helfen, Veränderungen zu sehen.</p>'}
   </section>
   <section class="card"><div class="row between"><h3>Einstufung</h3><button class="btn ghost small" data-act="teststart">${lastTest?'Wiederholen':'Test machen'}</button></div>
-    ${lastTest?`<p class="small muted">Vom ${new Date(lastTest.date).toLocaleDateString('de-DE')}</p><table class="res">${testRows(lastTest.results)}</table>`
+    ${lastTest?(state.tests.length>=2?`<p class="small muted">Letzter Test vom ${new Date(lastTest.date).toLocaleDateString('de-DE')}, verglichen mit dem davor</p>${compareHTML(compareTests(state.tests[state.tests.length-2],lastTest))}`
+      :`<p class="small muted">Vom ${new Date(lastTest.date).toLocaleDateString('de-DE')}</p><table class="res">${testRows(lastTest.results)}</table>`)
       :'<p class="small muted">Noch kein Test. 10 Minuten, danach passt der Plan genauer zu dir.</p>'}</section>
   <section class="card"><h3>Balance, letzte 7 Tage</h3>${balanceHTML(setsByPattern(since(7)))}</section>
   <section class="card"><h3>Deine Übungen</h3>
@@ -1298,6 +1412,50 @@ function vGear(){
     <li><b>Zweite Kettlebell</b> oder verstellbare Kurzhanteln</li></ol></section>`;
 }
 
+/* ---------- Kopfhörer-Taste (Versuch) ----------
+   Die App spielt während Training und Test einen stillen Ton in Schleife. Dadurch landen Tipp-Gesten der
+   Kopfhörer (Play/Pause, Weiter) als Media-Session-Ereignis bei der App. Auf iOS als Web-App nicht garantiert. */
+let hsAudio=null,hsReady=false;
+function silentWavUrl(){
+  const sr=8000,n=sr*2,buf=new ArrayBuffer(44+n*2),v=new DataView(buf);
+  const w=(o,str)=>{for(let i=0;i<str.length;i++)v.setUint8(o+i,str.charCodeAt(i));};
+  w(0,'RIFF');v.setUint32(4,36+n*2,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);
+  v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,n*2,true);
+  for(let i=0;i<n;i++)v.setInt16(44+i*2,(i%2?1:-1),true);
+  return URL.createObjectURL(new Blob([buf],{type:'audio/wav'}));
+}
+function headsetOn(){
+  hsReady=false;if(!state.headset||!('mediaSession' in navigator))return;
+  try{
+    if(!hsAudio){hsAudio=new Audio(silentWavUrl());hsAudio.loop=true;hsAudio.setAttribute('playsinline','');}
+    hsAudio.play().then(()=>{hsReady=true;refreshHeadsetLine();}).catch(()=>{hsReady=false;refreshHeadsetLine();});
+    navigator.mediaSession.metadata=new MediaMetadata({title:'Mattenzeit',artist:'Training läuft'});
+    ['play','pause','nexttrack','previoustrack','seekforward','seekbackward'].forEach(a=>{try{navigator.mediaSession.setActionHandler(a,()=>headsetPress(a));}catch(e){}});
+    navigator.mediaSession.playbackState='playing';
+  }catch(e){}
+}
+function headsetOff(){
+  try{if(hsAudio)hsAudio.pause();}catch(e){}
+  if('mediaSession' in navigator){['play','pause','nexttrack','previoustrack','seekforward','seekbackward'].forEach(a=>{try{navigator.mediaSession.setActionHandler(a,null);}catch(e){}});
+    try{navigator.mediaSession.playbackState='none';}catch(e){}}
+  hsReady=false;
+}
+function headsetPress(a){
+  if(hsAudio&&hsAudio.paused)hsAudio.play().catch(()=>{});
+  try{navigator.mediaSession.playbackState='playing';}catch(e){}
+  ui.hsLast={a,t:Date.now()};
+  if(view==='player'&&ui.run){const r=ui.run;
+    if(r.phase==='rest'){beginWork();}
+    else{if(r.paused)r.paused=false;r.rh=null;beep(1300,.2);startNext();}
+  }else if(view==='test'&&ui.test){const T=ui.test,t=curTest();
+    if(T.phase==='run'&&t.mode!=='timer')testStop();}
+  refreshHeadsetLine();
+}
+function headsetLine(){if(!state.headset)return '';
+  const l=ui.hsLast&&Date.now()-ui.hsLast.t<15000?` · zuletzt erkannt: ${ui.hsLast.a}`:'';
+  return `<p class="small muted" id="hsline" style="text-align:center">Kopfhörer-Taste: ${'mediaSession' in navigator?(hsReady?'bereit':'nicht aktiv'):'vom Browser nicht unterstützt'}${l}</p>`;}
+function refreshHeadsetLine(){const el=document.getElementById('hsline');if(el)el.outerHTML=headsetLine();}
+
 /* ---------- Sichern & Laden ---------- */
 function isStandalone(){try{return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;}catch(e){return false;}}
 function backupText(){return JSON.stringify({app:'mattenzeit',version:APP_VERSION,exported:new Date().toISOString(),state});}
@@ -1344,6 +1502,7 @@ document.addEventListener('click',ev=>{
     quiet(){state.profile.quiet=!state.profile.quiet;save();ui.plan=null;render();},
     timecalls(){state.timeCalls=!state.timeCalls;save();render();},
     rhythm(){state.rhythm=!state.rhythm;save();ui.plan=null;render();},
+    headset(){state.headset=!state.headset;save();render();},
     detail(){ui.detail=v;render();},
     closedetail(){ui.detail=null;render();},
     filter(){ui.filter=v;render();},
@@ -1398,7 +1557,7 @@ document.addEventListener('click',ev=>{
     tdec(){ui.test.val=Math.max(0,(ui.test.val||0)-1);document.getElementById('tval').textContent=ui.test.val;},
     tinc(){ui.test.val=(ui.test.val||0)+1;document.getElementById('tval').textContent=ui.test.val;},
     tsave(){testSave();},
-    testquit(){clearInterval(tick);hush();keepAwake(false);ui.test=null;go(state.onboarded?'today':'onboard');},
+    testquit(){clearInterval(tick);hush();keepAwake(false);headsetOff();ui.test=null;go(state.onboarded?'today':'onboard');},
     /* Daten */
     backup(){exportData();},
     copydata(){copyData();},
@@ -1407,6 +1566,8 @@ document.addEventListener('click',ev=>{
     pastego(){parseImport(document.getElementById('pastebox').value);},
     importno(){ui.importPending=null;render();},
     importyes(){const st=migrate(ui.importPending.st);state=st;state.onboarded=true;save();ui.importPending=null;ui.plan=null;ui.dataMsg='Daten übernommen.';render();},
+    tdmeasure(){const w=document.getElementById('td-weight').value.trim(),c=document.getElementById('td-waist').value.trim();
+      commitMeasure({weight:w===''?null:+w.replace(',','.'),waist:c===''?null:+c.replace(',','.')});ui.tdMeasureDone=true;save();render();},
     /* Messen */
     measure(){ui.measure=true;render();},
     measureno(){ui.measure=false;render();},

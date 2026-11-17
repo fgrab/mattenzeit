@@ -8,10 +8,13 @@ Läuft als installierbare Web-App (PWA) direkt im Browser, auch offline.
 ## Funktionen
 - Einstieg mit Profil und Einstufungstest
 - Trainingsvorschlag nach verfügbarer Zeit, Tagesform und Lücken in den Bewegungsmustern
-- Einweisung für neue Übungen, Sprachansagen mit Restzeit, Halte-Rhythmus
+- Einweisung für neue Übungen, Sprachansagen mit Restzeit
+- Tempo-Coach: Die Stimme gibt jede Wiederholung vor und geht automatisch weiter
+- Einstufungstest im Takt mit automatischem Zählen, Vorher-Nachher beim Wiederholungstest
 - Feedback pro Übung, automatische Steigerung
 - Geräte-Empfehlungen auf Basis der Trainingsdaten
 - Sicherung und Wiederherstellung der Daten als Datei
+- Kopfhörer-Taste als „Geschafft“ (Versuch)
 
 ## Daten
 Alle Trainingsdaten bleiben auf dem Gerät (localStorage). Nichts davon liegt in diesem Repository.

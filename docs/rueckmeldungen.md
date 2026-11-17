@@ -11,27 +11,24 @@ Aufwand: **S** = klein, **M** = mittel, **L** = groß. Die Nummern in Klammern v
 ### Offen, aufsteigend nach Aufwand
 | # | Punkt | Aufwand | Nutzen | Bemerkung |
 |---|---|---|---|---|
-| 1 | Vorher-Nachher beim Wiederholungstest (1) | S | hoch | Test wiederholen geht schon, es fehlt der Vergleich mit dem letzten Test |
-| 2 | Datenmodell fertig sync-fähig machen (7) | S | mittel | Trainings, Tests und Messungen haben schon IDs; fehlt: Änderungszeitpunkt für Profil und Übungsstände |
-| 3 | App-Symbol: Varianten und Startbildschirm (12) | S | niedrig | Erster Entwurf läuft |
-| 4 | Takt und automatisches Zählen im Einstufungstest (10) | M | hoch | Nutzt den vorhandenen Halte-Rhythmus; macht Tests vergleichbar; sollte vor dem ersten Wiederholungstest fertig sein |
-| 5 | Tempo-Coach für alle Übungen (4) | M | hoch | Automatisches Weiter auch ohne Haltezeit; Tempo pro Übung, Seitenwechsel |
-| 6 | Fitness-Einordnung der Testergebnisse (11) | M | hoch | Normwerte recherchieren, ggf. freiwillige Angabe zum Geschlecht |
-| 7 | Kopfhörer-Taste als „Geschafft“ (5) | M | hoch | Auf iOS als Web-App unsicher: klappt nur, solange die App Ton abspielt; erst kurz ausprobieren |
-| 8 | „So nicht“-Figur in der Seitenansicht (2) | M | mittel | Eine Fehler-Pose pro Übung |
-| 9 | Sync mit eigenem Server auf dem NAS (7) | M–L | hoch | Braucht Docker, HTTPS und Zugriff von unterwegs |
-| 10 | Figuren in 3D mit Front- und Schrägansicht (2) | L | hoch | Erst mit 4–5 Übungen ausprobieren |
-| 11 | Hinweise mit passender Ansicht verknüpfen (2) | L | hoch | Setzt 3D voraus |
-| 12 | Sprachbefehle, Apple Health, Apple Watch, iCloud-Sync (5, 7) | L | hoch | Nur mit nativer iOS-App sinnvoll |
+| 1 | App-Symbol: Varianten und Startbildschirm (12) | S | niedrig | Erster Entwurf läuft |
+| 2 | Fitness-Einordnung der Testergebnisse (11) | M | hoch | Normwerte recherchieren, ggf. freiwillige Angabe zum Geschlecht |
+| 3 | Kopfhörer-Taste als „Geschafft“ (5) | M | hoch | Als Versuch in 3b eingebaut (Schalter auf „Heute“); Rückmeldung vom iPhone ausstehend |
+| 4 | „So nicht“-Figur in der Seitenansicht (2) | M | mittel | Eine Fehler-Pose pro Übung |
+| 5 | Sync mit eigenem Server auf dem NAS (7) | M–L | hoch | Braucht Docker, HTTPS und Zugriff von unterwegs |
+| 6 | Figuren in 3D mit Front- und Schrägansicht (2) | L | hoch | Erst mit 4–5 Übungen ausprobieren |
+| 7 | Hinweise mit passender Ansicht verknüpfen (2) | L | hoch | Setzt 3D voraus |
+| 8 | Sprachbefehle, Apple Health, Apple Watch, iCloud-Sync (5, 7) | L | hoch | Nur mit nativer iOS-App sinnvoll |
 
 ### Erledigt
 - **Prototyp 2:** Sprachansagen mit Fortschritt, Restzeit und Ausgangsposition (3, 6), Halte-Rhythmus (4), ganzer Bildschirm als „Geschafft“ (5), Profil und Einstufungstest (1)
+- **Prototyp 3b:** Tempo-Coach für alle Wiederholungsübungen mit automatischem Weiter und Seitenwechsel (4, 5), Liegestütze und Glute Bridge im Test im Takt mit automatischem Zählen (10), Vorher-Nachher beim Wiederholungstest inkl. Körperwerte; erreichte Trainingsstände sinken durch den Test nicht (1), Datenmodell sync-fähig: IDs, Zeitstempel, Änderungszeitpunkte pro Bereich, Geräte-ID (7), Kopfhörer-Taste als Versuch (5)
 - **Prototyp 3a „Echt testbar“:** installierbare Web-App mit Offline-Betrieb und App-Symbol (12), Bildschirm bleibt an (9), Sicherung/Wiederherstellung und Kopieren/Einfügen (7), mehrere Ziele (8), Haltezeit im Bridge-Test (10), BMI und Taille-zu-Größe (11), Hinweis bei neuer Version
 
 ---
 
 ## 1. Einstieg: Profil und Einstufungstest
-**Status:** Profil und Einstufungstest in Prototyp 2 umgesetzt; Wiederholungstest mit Vorher-Nachher offen
+**Status:** umgesetzt (Profil und Einstufungstest in Prototyp 2, Vorher-Nachher beim Wiederholungstest in 3b)
 
 **Profil (alles überspringbar, später nachtragbar)**
 - Vorname (Ansprache, auch in der Sprachansage)
@@ -85,7 +82,7 @@ Ziel: Einstieg max. 2 Min. Fragen + ca. 10 Min. Test.
 ---
 
 ## 4. Halten und Tempo per Stimme anleiten
-**Status:** Haltezeit mit Halte-Rhythmus in Prototyp 2 umgesetzt (bei Übungen mit Haltezeit geht es automatisch weiter); Tempo-Coach für alle Übungen offen
+**Status:** umgesetzt (Halte-Rhythmus in Prototyp 2, Tempo-Coach für alle Wiederholungsübungen in 3b; Swing bewusst ohne Takt)
 
 - Übungen bekommen eine **Haltezeit** an der entscheidenden Stelle, z. B. Glute Bridge oben, Superman oben, Kniebeuge unten (pausiert)
 - Stimme zählt mit: „Halten … 3, 2, 1 … und runter“
@@ -96,7 +93,7 @@ Ziel: Einstieg max. 2 Min. Fragen + ca. 10 Min. Test.
 ---
 
 ## 5. Freihändige Bedienung
-**Status:** großer Tippbereich in Prototyp 2 umgesetzt; Kopfhörer-Taste und Sprachbefehle offen
+**Status:** großer Tippbereich (2) und automatisches Weiter (3b) umgesetzt; Kopfhörer-Taste als Versuch in 3b; Sprachbefehle offen (native App)
 
 Ziel: nicht aus der Übung heraus zum Handy auf dem Boden gehen müssen.
 
@@ -150,7 +147,7 @@ Ziel: nicht aus der Übung heraus zum Handy auf dem Boden gehen müssen.
 ---
 
 ## 7. Datenablage und Sync zwischen Geräten
-**Status:** offen
+**Status:** Export/Import (3a) und sync-fähiges Datenmodell (3b) umgesetzt; NAS-Sync offen
 
 **Problem heute:** Daten liegen nur im Browser des jeweiligen Geräts. Kein Abgleich zwischen iPhone und iPad. Beim Löschen der Website-Daten, Gerätewechsel oder wenn iOS den Speicher aufräumt, sind sie weg.
 
@@ -193,7 +190,7 @@ Ziel: nicht aus der Übung heraus zum Handy auf dem Boden gehen müssen.
 ---
 
 ## 10. Tempo und Haltezeit im Einstufungstest
-**Status:** Haltezeit-Hinweis im Bridge-Test umgesetzt; Takt und automatisches Zählen im Test offen
+**Status:** umgesetzt in 3b (Liegestütze und Glute Bridge im Takt, App zählt mit; Kniebeugen bleiben ein 60-Sekunden-Test)
 
 - Glute Bridge im Test: Haltezeit angeben, z. B. „oben 1 Sekunde halten“
 - Besser noch: Die Stimme gibt im Test den Takt vor (wie im Halte-Rhythmus) und zählt die Wiederholungen selbst. Man tippt nur, wenn es nicht mehr geht, und muss danach keine Zahl eintragen
