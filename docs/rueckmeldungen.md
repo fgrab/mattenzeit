@@ -13,12 +13,13 @@ Aufwand: **S** = klein, **M** = mittel, **L** = groß. Die Nummern in Klammern v
 |---|---|---|---|---|
 | 1 | App-Symbol: Varianten und Startbildschirm (12) | S | niedrig | Erster Entwurf läuft |
 | 2 | Fitness-Einordnung der Testergebnisse (11) | M | hoch | Normwerte recherchieren, ggf. freiwillige Angabe zum Geschlecht |
-| 3 | Kopfhörer-Taste als „Geschafft“ (5) | M | hoch | Als Versuch in 3b eingebaut (Schalter auf „Heute“); Rückmeldung vom iPhone ausstehend |
-| 4 | „So nicht“-Figur in der Seitenansicht (2) | M | mittel | Eine Fehler-Pose pro Übung |
-| 5 | Sync mit eigenem Server auf dem NAS (7) | M–L | hoch | Braucht Docker, HTTPS und Zugriff von unterwegs |
-| 6 | Figuren in 3D mit Front- und Schrägansicht (2) | L | hoch | Erst mit 4–5 Übungen ausprobieren |
-| 7 | Hinweise mit passender Ansicht verknüpfen (2) | L | hoch | Setzt 3D voraus |
-| 8 | Sprachbefehle, Apple Health, Apple Watch, iCloud-Sync (5, 7) | L | hoch | Nur mit nativer iOS-App sinnvoll |
+| 3 | Bestwerte im Alltag: gelegentlich ein Satz „so viele wie möglich“ als Mini-Test (13) | S–M | hoch | Idee aus dem Vergleich mit Freeletics |
+| 4 | Kopfhörer-Taste als „Geschafft“ (5) | M | hoch | Als Versuch in 3b eingebaut (Schalter auf „Heute“); Rückmeldung vom iPhone ausstehend |
+| 5 | „So nicht“-Figur in der Seitenansicht (2) | M | mittel | Eine Fehler-Pose pro Übung |
+| 6 | Sync mit eigenem Server auf dem NAS (7) | M–L | hoch | Braucht Docker, HTTPS und Zugriff von unterwegs |
+| 7 | Figuren in 3D mit Front- und Schrägansicht (2) | L | hoch | Erst mit 4–5 Übungen ausprobieren |
+| 8 | Hinweise mit passender Ansicht verknüpfen (2) | L | hoch | Setzt 3D voraus |
+| 9 | Sprachbefehle, Apple Health, Apple Watch, iCloud-Sync (5, 7) | L | hoch | Nur mit nativer iOS-App sinnvoll |
 
 ### Erledigt
 - **Prototyp 2:** Sprachansagen mit Fortschritt, Restzeit und Ausgangsposition (3, 6), Halte-Rhythmus (4), ganzer Bildschirm als „Geschafft“ (5), Profil und Einstufungstest (1)
@@ -233,3 +234,18 @@ Ziel: nicht aus der Übung heraus zum Handy auf dem Boden gehen müssen.
 - Optional: Startbildschirm beim Öffnen (iOS-Splashscreen) in App-Farben
 
 **Einordnung:** gehört zur installierbaren Web-App (Prototyp 3), Aufwand klein bis mittel
+
+---
+
+## 13. Bestwerte im Alltag
+**Status:** offen
+
+Idee aus dem Vergleich mit Freeletics. Dort gibt es feste Workouts als Bestwert-Tests („Beat your PB“). Nutzer kritisieren aber, dass der Druck zu hoch ist und die Vorschläge zu schwer sind. Bei uns soll es kleiner und freiwilliger sein.
+
+- Gelegentlich (z. B. alle 2–3 Wochen pro Übung) wird der letzte Satz einer sicheren Übung zum Bestwert-Satz: „so viele saubere Wiederholungen wie möglich“, im gewohnten Takt, die App zählt mit
+- Nur bei Übungen mit Status „sicher“, nie bei Schmerz-Meldung, nie bei Tagesform „müde“
+- Vorher ankündigen und überspringbar: „Letzter Satz als Bestwert-Versuch? Du kannst auch normal trainieren.“
+- Ergebnis: neuer Bestwert wird gefeiert („Neuer Bestwert: 19 Kniebeugen, vorher 16“) und im Verlauf pro Übung gezeigt
+- Bestwerte fließen vorsichtig in die Steigerung ein (Trainingsmenge ca. 60–70 % des Bestwerts), ähnlich wie beim Einstufungstest
+- Ergänzt die großen Tests alle 4–6 Wochen, ersetzt sie nicht
+
