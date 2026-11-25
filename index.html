@@ -88,7 +88,12 @@ button:focus-visible,input:focus-visible,label:focus-within,summary:focus-visibl
 .seg button{flex:1;border:0;background:transparent;border-radius:9px;padding:9px 6px;font-weight:600;font-size:.9rem;color:var(--muted);min-width:0}
 .seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .seg.rate button[aria-pressed="true"][data-v="easy"]{color:var(--good)}
+.seg.rate{flex-wrap:wrap}
+.seg.rate button{flex:1 1 30%}
+.seg.rate button[aria-pressed="true"][data-v="firm"]{color:var(--accent)}
 .seg.rate button[aria-pressed="true"][data-v="hard"]{color:var(--warn)}
+.preview{font-size:.9rem;color:var(--muted)}
+.preview b{color:var(--ink)}
 .seg.rate button[aria-pressed="true"][data-v="fail"]{color:var(--bad)}
 
 .chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:.875rem;font-weight:600}
@@ -235,11 +240,12 @@ const EX = {
   poses:[[[91,62],[82,72],[46,72],[46,99],[26,99],[44,99],[24,99],[82,86],[82,99],[81,86],[81,99],[64,82]],
          [[87,82],[82,74],[46,74],[46,99],[26,99],[44,99],[24,99],[82,87],[82,99],[81,87],[81,99],[64,60]]]},
  wgs:{n:'Weltbeste Dehnung',p:'mobility',pos:'stand',u:'reps',sides:1,start:4,step:0,max:4,per:3600,key:2,
-  setup:'Stell dich ans hintere Ende der Matte.',
-  cues:['Großer Ausfallschritt, Hände innen neben den vorderen Fuß','Ellbogen Richtung Fußknöchel sinken lassen','Arm zur Decke aufdrehen, Blick folgt der Hand'],
-  bad:['Hinteres Knie kippt ein','Nur der Arm dreht, der Oberkörper nicht'],
-  poses:[[[85,62],[76,66],[54,82],[74,80],[78,99],[38,92],[20,98],[75,82],[72,99],[74,82],[71,99]],
-         [[83,58],[76,66],[54,82],[74,80],[78,99],[38,92],[20,98],[75,82],[72,99],[76,50],[76,34]]]},
+  setup:'Großer Ausfallschritt nach vorn. Hinteres Bein lang, Knie vom Boden weg, hinterer Fuß steht auf dem Fußballen. Beide Hände flach auf den Boden, innen neben den vorderen Fuß.',
+  cues:['Hinteres Bein lang, Knie bleibt vom Boden weg, Fußballen aufgestellt','Beide Hände flach innen neben dem vorderen Fuß, Arme gestreckt','Den Arm auf der Seite des vorderen Beins zur Decke aufdrehen, Blick folgt der Hand'],
+  bad:['Hinteres Knie kippt ein oder hängt durch','Nur der Arm dreht, der Oberkörper nicht','Vorderes Knie fällt nach innen'],
+  easier:'Leichter: hinteres Knie auf der Matte ablegen, Fußrücken liegt flach.',
+  poses:[[[85,62],[76,66],[54,82],[74,80],[78,99],[37,89],[18,98],[75,82],[72,99],[74,82],[71,99]],
+         [[83,58],[76,66],[54,82],[74,80],[78,99],[37,89],[18,98],[75,82],[72,99],[76,50],[76,34]]]},
  squat:{n:'Kniebeuge',p:'squat',pos:'stand',u:'reps',start:12,step:2,max:25,per:2600,key:1,
   setup:'Füße schulterbreit, Zehen leicht nach außen.',
   cues:['Füße schulterbreit, Zehen leicht nach außen','Hüfte nach hinten unten, als ob du dich setzt','Knie zeigen in Richtung Zehen, Fersen bleiben am Boden'],
@@ -362,8 +368,8 @@ const EX = {
 
 const TESTS = [
  {key:'push',title:'Liegestütze',ex:'pushup',mode:'paced',choice:[['pushup','Liegestütz'],['kneepush','Knie-Liegestütz']],
-  tempo:{go:2,back:1,hold:0,words:['Runter','Hoch']},
-  text:'Die Stimme gibt den Takt vor: 2 Sekunden runter, 1 Sekunde hoch, und zählt mit. Mach mit, solange die Wiederholungen sauber sind, dann tippe irgendwo auf den Bildschirm. Wenn du keine 5 schaffst, nimm die Knie-Variante.',
+  tempo:{go:1.5,back:1,hold:0,words:['Runter','Hoch']},
+  text:'Die Stimme gibt den Takt vor: zügig runter, zügig hoch, und zählt mit. Das Tempo ist bei jedem Test gleich, damit die Werte vergleichbar bleiben. Mach mit, solange die Wiederholungen sauber sind, dann tippe irgendwo auf den Bildschirm. Wenn du keine 5 schaffst, nimm die Knie-Variante.',
   say:'Im Takt mitmachen. Tippe auf den Bildschirm, wenn es nicht mehr sauber geht.'},
  {key:'squat',title:'Kniebeugen in 60 Sekunden',ex:'squat',mode:'timer',dur:60,
   text:'So viele saubere Kniebeugen wie möglich in 60 Sekunden. Zähl im Kopf mit, die Zeit sagt die App an.',
@@ -387,21 +393,24 @@ const REACHS = {knee:'Knie',shin:'Schienbein',ankle:'Knöchel',floor:'Boden',pal
 const REACHO = ['knee','shin','ankle','floor','palm'];
 /* Tempo-Coach: Sekunden für Hinweg und Rückweg, Ansagewörter. Übungen mit Haltezeit nutzen ihre rh-Wörter. Swing bleibt ohne Takt. */
 const TEMPO = {
- squat:[2,1,'Runter','Hoch'], goblet:[2,1,'Runter','Hoch'], lunge:[2,1.5,'Runter','Hoch'], bss:[2,1.5,'Runter','Hoch'],
- kneepush:[2,1,'Runter','Hoch'], pushup:[2,1,'Runter','Hoch'], deadbug:[2,2,'Strecken','Zurück'],
+ squat:[1.5,1,'Runter','Hoch'], goblet:[1.5,1,'Runter','Hoch'], lunge:[1.5,1.2,'Runter','Hoch'], bss:[1.5,1.2,'Runter','Hoch'],
+ kneepush:[1.5,1,'Runter','Hoch'], pushup:[1.5,1,'Runter','Hoch'], deadbug:[1.5,1.5,'Strecken','Zurück'],
  catcow:[3,3,'Ausatmen, rund','Einatmen'], wgs:[2.5,2,'Arm hoch','Zurück'],
  bridge:[1.5,2], goodmorning:[2,1.5], superman:[1.5,2], bandrow:[1.5,2], tablerow:[1.5,2], pullapart:[1.5,2]
 };
+const TEMPO_F={ruhig:1.35,normal:1,zuegig:.75};
+const TEMPO_N={ruhig:'Ruhig',normal:'Normal',zuegig:'Zügig'};
 function tempoOf(id,hold){const t=TEMPO[id];if(!t)return null;const e=EX[id];
-  return {go:t[0],back:t[1],hold:hold||0,words:[t[2]||(e.rh&&e.rh[0])||'Hoch',t[3]||(e.rh&&e.rh[1])||'Runter']};}
+  const f=e.p==='mobility'?1:(TEMPO_F[state.tempo]||1);
+  return {go:+(t[0]*f).toFixed(2),back:+(t[1]*f).toFixed(2),hold:hold||0,words:[t[2]||(e.rh&&e.rh[0])||'Hoch',t[3]||(e.rh&&e.rh[1])||'Runter']};}
 
 /* ---------- Speicher ---------- */
-const APP_VERSION='3b.1';
+const APP_VERSION='3c.1';
 const KEY='mattenzeit-v1';
 const DAY=864e5;
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-function freshState(){return {v:2,schema:3,deviceId:uid(),meta:{created:Date.now()},onboarded:false,example:false,voice:true,timeCalls:true,rhythm:true,headset:false,energy:'normal',
+function freshState(){return {v:2,schema:3,deviceId:uid(),meta:{created:Date.now()},onboarded:false,example:false,voice:true,timeCalls:true,rhythm:true,tempo:'normal',headset:false,energy:'normal',
   profile:{chair:true,table:true,band:false,kb:[],pullup:false,quiet:true},
   body:{name:'',goals:['fitter'],freq:3,height:null,age:null,limits:[],measures:[]},
   levels:{squat:0,lunge:0,hinge:0,push:0,pull:0,core:0},ex:{},sessions:[],tests:[],dismissed:{},flags:{}};}
@@ -430,6 +439,7 @@ function migrate(s){
     Object.values(s.ex||{}).forEach(x=>{x.ts=x.ts||Date.now();});
     if(s.headset===undefined)s.headset=false;
   }
+  if(!s.tempo)s.tempo='normal';
   return s;
 }
 function load(){try{const r=localStorage.getItem(KEY);if(r){const s=JSON.parse(r);if(s&&(s.v===1||s.v===2))return migrate(s);}}catch(e){}return null;}
@@ -928,7 +938,8 @@ function vToday(){
       <button class="chip" data-act="timecalls" aria-pressed="${state.timeCalls}">Restzeit ansagen</button>
       <button class="chip" data-act="rhythm" aria-pressed="${state.rhythm}">Tempo vorgeben</button>
       <button class="chip" data-act="headset" aria-pressed="${!!state.headset}">Kopfhörer-Taste (Versuch)</button></div>
-      ${state.rhythm?'<p class="small muted">Tempo vorgeben: Die Stimme sagt jede Wiederholung an („Runter … Hoch“) und geht am Ende des Satzes automatisch weiter.</p>':''}
+      ${state.rhythm?`<div class="stack" style="gap:6px"><span class="small"><b>Tempo</b></span>${seg('tempo',[['ruhig','Ruhig'],['normal','Normal'],['zuegig','Zügig']],state.tempo||'normal')}
+        <p class="small muted">Die Stimme sagt jede Wiederholung an („Runter … Hoch“) und geht am Ende des Satzes automatisch weiter. „Ruhig“ ist langsamer und dadurch härter, „Zügig“ näher am freien Tempo. Dehnübungen bleiben immer ruhig.</p></div>`:''}
       ${state.headset?'<p class="small muted">Kopfhörer-Taste: Einmal auf den AirPod tippen oder die Taste am Kabel drücken heißt „Geschafft“ bzw. „Weiter“. Das ist ein Versuch. Sag Bescheid, ob es bei dir klappt.</p>':''}</div>
   </section>
   <section class="card">
@@ -1009,6 +1020,7 @@ function vDetail(){
     <div class="row wrap">${e.p!=='mobility'&&e.p!=='cardio'?statusTag(st.status):''}
       <span class="small muted">Aktuell: <b class="num">${doseText(e,st.dose)}</b> ${doseUnit(e)}${ht?`, ${ht}`:''}</span></div>
     <div class="setup"><b>Ausgangsposition:</b> ${esc(e.setup)}</div>
+    ${e.easier?`<p class="small">${esc(e.easier)}</p>`:''}
     <div class="stack" style="gap:6px"><h3>Darauf achten</h3><ul class="clean ok">${e.cues.map(c=>`<li>${esc(c)}</li>`).join('')}</ul></div>
     <div class="stack" style="gap:6px"><h3>Typische Fehler</h3><ul class="clean x">${e.bad.map(c=>`<li>${esc(c)}</li>`).join('')}</ul></div>
     ${e.eq?`<p class="small"><b>Ausrüstung:</b> ${e.eq.map(q=>EQN[q]).join(', ')}${available(id)?'':' <span style="color:var(--warn)">(nicht vorhanden)</span>'}</p>`:'<p class="small"><b>Ausrüstung:</b> nur Matte</p>'}
@@ -1032,6 +1044,7 @@ function vBrief(){
     <div class="row between"><div class="stack" style="gap:4px">${patHTML(e.p)}<h2>${e.n}</h2></div>${statusTag(st.status)}</div>
     <div class="stage">${figHTML(id,true,b.slow===id?'data-slow="1"':'')}</div>
     <div class="setup"><b>Ausgangsposition:</b> ${esc(e.setup)}</div>
+    ${e.easier?`<p class="small">${esc(e.easier)}</p>`:''}
     <ul class="clean ok">${e.cues.map(c=>`<li>${esc(c)}</li>`).join('')}</ul>
     ${ht?`<p class="small"><b>Halten:</b> ${ht}. Die Stimme zählt mit.</p>`:''}
     <p class="small muted"><b>Vermeiden:</b> ${e.bad.map(esc).join(' · ')}</p>
@@ -1110,13 +1123,14 @@ function beginWork(){
   render();
 }
 /* ---------- Takt-Baustein: Training (Tempo-Coach) und Test ---------- */
+const NUMW=['null','eins','zwei','drei','vier','fünf','sechs'];
 function makePacer(o){const now=Date.now();
   return {id:o.id,tempo:o.tempo,reps:o.reps,sides:!!o.sides,test:!!o.test,onDone:o.onDone,side:1,rep:1,counted:0,ph:'pre',t0:now,t1:now+900,said:{},nextWord:null};}
 function pacerStep(p){
   const now=Date.now();const T=p.tempo;const W=T.words;
   if(now<p.t1){
-    if(p.ph==='hold'&&T.hold>1){const el=Math.floor((now-p.t0)/1000);const left=T.hold-el;
-      if(el>0&&left>0&&!p.said[p.side+'h'+p.rep+'_'+el]){p.said[p.side+'h'+p.rep+'_'+el]=1;say(String(left),{interrupt:true,rate:1.15});}}
+    if(p.ph==='hold'&&T.hold>1){const el=Math.floor((now-p.t0)/1000);
+      if(el>0&&el<T.hold&&!p.said[p.side+'h'+p.rep+'_'+el]){p.said[p.side+'h'+p.rep+'_'+el]=1;say(NUMW[el+1]||String(el+1),{interrupt:true,rate:1.15});}}
     return;}
   const setPh=(ph,dur,word)=>{p.ph=ph;p.t0=now;p.t1=now+dur;if(word)say(word,{interrupt:true,rate:1.1});updatePacerUI(p);};
   const lead=()=>{if(p.test)return W[0];
@@ -1125,7 +1139,7 @@ function pacerStep(p){
     return W[0];};
   if(p.ph==='pre'){setPh('go',T.go*1000,lead());return;}
   if(p.ph==='go'){if(T.hold>0)setPh('hold',T.hold*1000,'Halten');else setPh('back',T.back*1000,W[1]);return;}
-  if(p.ph==='hold'){setPh('back',T.back*1000,W[1]);return;}
+  if(p.ph==='hold'){setPh('back',T.back*1000,`Und ${W[1].toLowerCase()}`);return;}
   if(p.ph==='back'){
     p.counted=p.rep;
     if(p.test){say(String(p.rep),{interrupt:true,rate:1.15});}
@@ -1224,7 +1238,8 @@ function vFeedback(){
     return `<section class="card">
       <div class="row"><div class="thumb">${figHTML(id,false)}</div><div class="grow stack" style="gap:2px"><b>${e.n}</b>
         <span class="small muted num">${it?`${it.sets} × ${doseText(e,it.dose)}`:`1 × ${doseText(e,e.start)}`} ${doseUnit(e)}${ht?`, ${ht}`:''}</span></div></div>
-      ${seg('rate',[['easy','Zu leicht'],['ok','Passt'],['hard','Zu schwer'],['fail','Nicht geschafft']],f.rating,`data-id="${id}"`,'rate')}
+      ${seg('rate',[['easy','Zu leicht'],['ok','Passt'],['firm','Fordernd'],['hard','Zu schwer'],['fail','Nicht geschafft']],f.rating,`data-id="${id}"`,'rate')}
+      <p class="preview">${previewText(id,f)}</p>
       <div class="row wrap">
         <button class="chip" data-act="form" data-id="${id}" aria-pressed="${f.form==='sloppy'}">Technik wurde unsauber</button>
         <button class="chip toggle-pain" data-act="pain" data-id="${id}" aria-pressed="${f.pain}">Schmerz oder Ziehen</button>
@@ -1237,21 +1252,35 @@ function vFeedback(){
     <div class="row between small muted"><span>locker</span><span>am Limit</span></div></section>
   <button class="btn primary block big" data-act="savefb">Speichern und anpassen</button>`;
 }
+/* Eine Stelle für die Steigerungsregel: genutzt für die Vorschau im Feedback und fürs Speichern. */
+function doseChange(id,f){
+  const e=EX[id],st=exState(id);const old=st.dose;let dose=old;const oldHold=holdOf(id);let hold=oldHold;let note='',kind='same';
+  const bump=e.u==='sec'?5:1;const minD=e.u==='sec'?10:3;
+  if(f.pain){note='Schmerz notiert: keine Steigerung. Hält es an, lieber die leichtere Variante oder ärztlich abklären.';kind='bad';}
+  else if(f.form==='sloppy'&&f.rating!=='fail'&&f.rating!=='hard'){note='Erst Technik festigen: alles bleibt gleich.';kind='warn';}
+  else if(f.rating==='easy'){if(e.hold&&hold<e.hold.max)hold++;else dose=old+Math.max(e.step||bump,2*bump);kind='good';}
+  else if(f.rating==='ok'){dose=old+bump;kind='good';}
+  else if(f.rating==='firm'){note='Fordernd, aber machbar: bleibt gleich.';kind='same';}
+  else if(f.rating==='hard'){dose=Math.max(minD,old-bump);kind='warn';}
+  else if(f.rating==='fail'){dose=Math.max(minD,old-(e.step||bump)*(e.u==='sec'?1:2));if(e.hold&&hold>e.hold.start)hold--;kind='bad';}
+  if(dose>e.max&&CHAINS[e.p])dose=Math.max(old,e.max);
+  return {dose,hold,note,kind,old,oldHold};
+}
+function previewText(id,f){
+  const e=EX[id];const c=doseChange(id,f);const u=e.u==='sec'?' Sekunden':' Wiederholungen';
+  let t=c.dose!==c.old?`Nächstes Mal: <b>${c.dose}${u}</b> (statt ${c.old})`:`Nächstes Mal: <b>gleich, ${c.old}${u}</b>`;
+  if(e.hold&&c.hold!==c.oldHold)t+=`, <b>${c.hold} s halten</b> (statt ${c.oldHold})`;
+  if(e.sides)t+=' pro Seite';
+  return t;
+}
 function applyFeedback(){
   const fb=ui.fb;const msgs=[];
   const items=fb.ids.map(id=>{const it=ui.plan.items.find(i=>i.id===id);return {id,sets:it?it.sets:1,dose:it?it.dose:EX[id].start,hold:it?it.hold:0,...fb.items[id]};});
   if(ui.plan.warmup)items.unshift({id:ui.plan.warmup,sets:1,dose:EX[ui.plan.warmup].start,rating:'ok'});
   items.forEach(it=>{
     const e=EX[it.id];if(e.p==='mobility')return;
-    const st=exState(it.id);const old=st.dose;let dose=old;let note='';let kind='same';
-    const oldHold=holdOf(it.id);let hold=oldHold;
-    const bump=e.u==='sec'?5:1;
-    if(it.pain){note='Schmerz notiert: keine Steigerung. Hält es an, lieber die leichtere Variante oder ärztlich abklären.';kind='bad';}
-    else if(it.form==='sloppy'&&it.rating!=='fail'){note='Erst Technik festigen: alles bleibt gleich.';kind='warn';}
-    else if(it.rating==='easy'){if(e.hold&&hold<e.hold.max)hold++;else dose=old+(e.step||bump);kind='good';}
-    else if(it.rating==='ok'){dose=old+bump;kind='good';}
-    else if(it.rating==='hard'){note='Bleibt gleich, bis es sich gut anfühlt.';kind='warn';}
-    else if(it.rating==='fail'){dose=Math.max(e.u==='sec'?10:3,old-(e.step||bump));if(e.hold&&hold>e.hold.start)hold--;kind='bad';}
+    const st=exState(it.id);const old=st.dose;const oldHold=holdOf(it.id);
+    let {dose,hold,note,kind}=doseChange(it.id,it);
     let status=st.status,clear=st.clear||0;
     if(it.clarity){if(it.clarity==='clear'){clear++;status=clear>=2?'known':'learning';}
       else{clear=0;status='learning';}}
@@ -1503,6 +1532,7 @@ document.addEventListener('click',ev=>{
     timecalls(){state.timeCalls=!state.timeCalls;save();render();},
     rhythm(){state.rhythm=!state.rhythm;save();ui.plan=null;render();},
     headset(){state.headset=!state.headset;save();render();},
+    tempo(){state.tempo=v;save();ui.plan=null;render();},
     detail(){ui.detail=v;render();},
     closedetail(){ui.detail=null;render();},
     filter(){ui.filter=v;render();},
