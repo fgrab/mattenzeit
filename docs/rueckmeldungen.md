@@ -13,16 +13,16 @@ Aufwand: **S** = klein, **M** = mittel, **L** = groß. Die Nummern in Klammern v
 |---|---|---|---|---|
 | 1 | App-Symbol: Varianten und Startbildschirm (12) | S | niedrig | Erster Entwurf läuft |
 | 2 | Bestwerte im Alltag: gelegentlich ein Satz „so viele wie möglich“ als Mini-Test (13) | S–M | hoch | Idee aus dem Vergleich mit Freeletics |
-| 3 | Körper-Checkliste für alle Übungen (Füße, Beine, Hüfte, Rücken, Arme, Kopf) (14c) | M | hoch | Inhaltsarbeit für 20 Übungen |
-| 4 | Fitness-Einordnung der Testergebnisse (11) | M | hoch | Normwerte recherchieren, ggf. freiwillige Angabe zum Geschlecht |
-| 5 | Kopfhörer-Taste als „Geschafft“ (5) | M | hoch | Als Versuch in 3b eingebaut (Schalter auf „Heute“); Rückmeldung vom iPhone ausstehend |
-| 6 | „So nicht“-Figur in der Seitenansicht (2) | M | mittel | Eine Fehler-Pose pro Übung |
-| 7 | Sync mit eigenem Server auf dem NAS (7) | M–L | hoch | Braucht Docker, HTTPS und Zugriff von unterwegs |
-| 8 | Figuren in 3D mit Front- und Schrägansicht (2) | L | hoch | Erst mit 4–5 Übungen ausprobieren |
-| 9 | Hinweise mit passender Ansicht verknüpfen (2) | L | hoch | Setzt 3D voraus |
-| 10 | Sprachbefehle, Apple Health, Apple Watch, iCloud-Sync (5, 7) | L | hoch | Nur mit nativer iOS-App sinnvoll |
+| 3 | Fitness-Einordnung der Testergebnisse (11) | M | hoch | Normwerte recherchieren, ggf. freiwillige Angabe zum Geschlecht |
+| 4 | Kopfhörer-Taste als „Geschafft“ (5) | M | hoch | Als Versuch in 3b eingebaut (Schalter auf „Heute“); Rückmeldung vom iPhone ausstehend |
+| 5 | „So nicht“-Figur in der Seitenansicht (2) | M | mittel | Eine Fehler-Pose pro Übung |
+| 6 | Sync mit eigenem Server auf dem NAS (7) | M–L | hoch | Braucht Docker, HTTPS und Zugriff von unterwegs |
+| 7 | Figuren in 3D mit Front- und Schrägansicht (2) | L | hoch | Erst mit 4–5 Übungen ausprobieren |
+| 8 | Hinweise mit passender Ansicht verknüpfen (2) | L | hoch | Setzt 3D voraus |
+| 9 | Sprachbefehle, Apple Health, Apple Watch, iCloud-Sync (5, 7) | L | hoch | Nur mit nativer iOS-App sinnvoll |
 
 ### Erledigt
+- **Prototyp 3d:** Körper-Checkliste „Genau erklärt“ für alle 20 Übungen (Kopf bis Fuß inkl. Atmung), Antippen hebt die Stelle an der Figur hervor, „Woran du merkst, dass es richtig ist“ und leichtere Varianten (14c)
 - **Prototyp 3c:** Fünf Rückmelde-Stufen mit „Fordernd“ (bleibt gleich) und sofortiger Vorschau der Wirkung (14a), Tempo-Stufen ruhig/normal/zügig, „normal“ zügiger als vorher (14b), Weltbeste Dehnung genauer beschrieben inkl. leichterer Variante (14c), Haltezeit wird hochgezählt: „Halten, zwei, drei, und runter“ (14d)
 - **Prototyp 2:** Sprachansagen mit Fortschritt, Restzeit und Ausgangsposition (3, 6), Halte-Rhythmus (4), ganzer Bildschirm als „Geschafft“ (5), Profil und Einstufungstest (1)
 - **Prototyp 3b:** Tempo-Coach für alle Wiederholungsübungen mit automatischem Weiter und Seitenwechsel (4, 5), Liegestütze und Glute Bridge im Test im Takt mit automatischem Zählen (10), Vorher-Nachher beim Wiederholungstest inkl. Körperwerte; erreichte Trainingsstände sinken durch den Test nicht (1), Datenmodell sync-fähig: IDs, Zeitstempel, Änderungszeitpunkte pro Bereich, Geräte-ID (7), Kopfhörer-Taste als Versuch (5)
@@ -254,7 +254,7 @@ Idee aus dem Vergleich mit Freeletics. Dort gibt es feste Workouts als Bestwert-
 ---
 
 ## 14. Rückmeldungen aus dem Training am 25.11.
-**Status:** a, b, c (Beschreibung Weltbeste Dehnung) und d in Prototyp 3c umgesetzt; Körper-Checkliste für alle Übungen offen
+**Status:** umgesetzt (a, b, d und Beschreibung Weltbeste Dehnung in 3c, Körper-Checkliste in 3d)
 
 **Positiv:** Während des ganzen Trainings musste nichts angetippt werden, das Handy konnte zur Seite gelegt werden. Tempo-Coach und automatisches Weiter funktionieren wie gedacht.
 

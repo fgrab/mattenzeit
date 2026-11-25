@@ -93,6 +93,18 @@ button:focus-visible,input:focus-visible,label:focus-within,summary:focus-visibl
 .seg.rate button[aria-pressed="true"][data-v="firm"]{color:var(--accent)}
 .seg.rate button[aria-pressed="true"][data-v="hard"]{color:var(--warn)}
 .preview{font-size:.9rem;color:var(--muted)}
+.bodylist{display:flex;flex-direction:column;gap:2px}
+.bodyrow{display:grid;grid-template-columns:104px 1fr;gap:10px;text-align:left;background:transparent;border:0;border-radius:10px;padding:8px 8px;font-size:.92rem;width:100%}
+.bodyrow b{font-weight:600}
+.bodyrow[aria-pressed="true"]{background:var(--accent-soft)}
+.bodyrow[aria-pressed="true"] b{color:var(--accent)}
+.bodyrow.static{cursor:default}
+.feel{border-left:3px solid var(--good);padding:6px 10px;font-size:.92rem}
+.stage.stick{position:sticky;top:calc(env(safe-area-inset-top,0px) + 6px);z-index:3;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.sheet .stage.stick{top:-18px}
+.stage.stick svg.fig{max-height:170px;width:auto;margin:0 auto}
+svg.fig .hlj{fill:var(--accent);opacity:.6}
+svg.fig .hls{fill:none;stroke:var(--accent);stroke-width:10;stroke-linecap:round;opacity:.55}
 .preview b{color:var(--ink)}
 .seg.rate button[aria-pressed="true"][data-v="fail"]{color:var(--bad)}
 
@@ -404,8 +416,182 @@ function tempoOf(id,hold){const t=TEMPO[id];if(!t)return null;const e=EX[id];
   const f=e.p==='mobility'?1:(TEMPO_F[state.tempo]||1);
   return {go:+(t[0]*f).toFixed(2),back:+(t[1]*f).toFixed(2),hold:hold||0,words:[t[2]||(e.rh&&e.rh[0])||'Hoch',t[3]||(e.rh&&e.rh[1])||'Runter']};}
 
+/* ---------- Körper-Checkliste: pro Übung Zeilen [Bereich, Text, Gelenke], dazu Gefühl und leichtere Variante ----------
+   Gelenk-Indizes der Figur: 0 Kopf, 1 Schultern, 2 Hüfte, 3 Knie vorn/nah, 4 Fuß vorn/nah, 5 Knie hinten/fern, 6 Fuß hinten/fern,
+   7 Ellbogen nah, 8 Hand nah, 9 Ellbogen fern, 10 Hand fern; 'spine' = Rücken zwischen Schultern und Hüfte. */
+const J={kopf:[0],schultern:[1],huefte:[2],knie:[3,5],fuesse:[4,6],ellbogen:[7,9],haende:[8,10],arme:[7,8,9,10],beine:[3,4,5,6],
+  vknie:[3],vfuss:[4],hknie:[5],hfuss:[6],arm1:[7,8],arm2:[9,10],ruecken:['spine'],atmung:[]};
+const BODY={
+ catcow:{rows:[['Hände','Unter den Schultern, Finger gespreizt, die ganze Handfläche drückt in den Boden',J.haende],
+   ['Knie','Unter der Hüfte, hüftbreit. Fußrücken liegen flach auf der Matte',[3,5,4,6]],
+   ['Rücken','Bewegt sich Wirbel für Wirbel: rund nach oben (Katze), dann sanft durchhängen (Kuh)',J.ruecken],
+   ['Kopf','Folgt der Bewegung: beim Rundmachen Richtung Bauchnabel schauen, bei der Kuh nach vorn',J.kopf],
+   ['Atmung','Beim Rundmachen ausatmen, beim Durchhängen einatmen',J.atmung]],
+  feel:'Wohliges Lösen im ganzen Rücken. Im unteren Rücken darf es nicht drücken.'},
+ wgs:{rows:[['Vorderer Fuß','Ganz auf dem Boden, das Knie steht über dem Knöchel',[3,4]],
+   ['Hinteres Bein','Lang gestreckt, Knie vom Boden weg, Fuß steht auf dem Fußballen',[5,6]],
+   ['Hände','Beide flach innen neben dem vorderen Fuß. Dann dreht der Arm auf der Seite des vorderen Beins zur Decke auf',J.haende],
+   ['Hüfte','Tief und leicht nach vorn sinken lassen',J.huefte],
+   ['Rücken','Lang. Beim Aufdrehen dreht die Brust mit, nicht nur der Arm',J.ruecken],
+   ['Kopf','Der Blick folgt der oberen Hand',J.kopf],
+   ['Atmung','Beim Aufdrehen ausatmen, oben einmal ruhig einatmen',J.atmung]],
+  feel:'Dehnung vorn in der Hüfte des hinteren Beins und eine Drehung im oberen Rücken.'},
+ squat:{rows:[['Füße','Schulterbreit, Zehen leicht nach außen. Der ganze Fuß bleibt am Boden, Gewicht auf Ferse und Mittelfuß',J.fuesse],
+   ['Knie','Zeigen in Richtung der Zehen, nicht nach innen fallen lassen',J.knie],
+   ['Hüfte','Geht nach hinten unten, so tief, wie der Rücken gerade bleibt',J.huefte],
+   ['Rücken','Gerade, die Brust bleibt offen',J.ruecken],
+   ['Arme','Zum Ausgleich nach vorn strecken oder vor der Brust verschränken',J.arme],
+   ['Kopf','Blick schräg nach vorn auf den Boden, Nacken lang',J.kopf],
+   ['Atmung','Beim Runtergehen einatmen, beim Hochkommen ausatmen',J.atmung]],
+  feel:'Oberschenkel und Po arbeiten. In den Knien zieht oder zwickt nichts.',
+  easier:'Leichter: nur so tief, wie es sauber geht, oder dich auf einen Stuhl setzen und wieder aufstehen.'},
+ goblet:{rows:[['Füße','Schulterbreit, leicht nach außen, ganzer Fuß am Boden',J.fuesse],
+   ['Hände','Kettlebell an den Griffseiten, eng an der Brust',J.haende],
+   ['Ellbogen','Zeigen nach unten und gehen unten zwischen die Knie',J.ellbogen],
+   ['Knie','In Richtung der Zehen. Unten schieben die Ellbogen sie leicht nach außen',J.knie],
+   ['Rücken','Aufrecht, das Gewicht zieht dich nicht nach vorn',J.ruecken],
+   ['Kopf','Blick geradeaus',J.kopf],
+   ['Atmung','Beim Runtergehen einatmen, beim Hochkommen ausatmen',J.atmung]],
+  feel:'Oberschenkel und Po arbeiten, der Oberkörper bleibt fast senkrecht.'},
+ lunge:{rows:[['Füße','Start hüftbreit. Der hintere Fuß landet auf dem Fußballen',J.fuesse],
+   ['Vorderes Knie','Bleibt über dem Fuß und fällt nicht nach innen',J.vknie],
+   ['Hinteres Knie','Sinkt senkrecht Richtung Boden und stoppt knapp davor',J.hknie],
+   ['Hüfte','Geht gerade nach unten, nicht nach vorn schieben',J.huefte],
+   ['Rücken','Aufrecht, Bauch leicht fest',J.ruecken],
+   ['Arme','Hände in der Hüfte oder locker zum Ausgleich',J.haende],
+   ['Atmung','Beim Absenken einatmen, beim Hochdrücken ausatmen',J.atmung]],
+  feel:'Vor allem das vordere Bein arbeitet, der Druck liegt auf der vorderen Ferse.',
+  easier:'Leichter: kleinerer Schritt, nicht ganz so tief, mit einer Hand an der Wand festhalten.'},
+ bss:{rows:[['Vorderer Fuß','So weit vorn, dass das Knie unten etwa über dem Knöchel ist. Ganzer Fuß am Boden',J.vfuss],
+   ['Hinterer Fuß','Fußrücken liegt auf der Sitzfläche und hält nur das Gleichgewicht',J.hfuss],
+   ['Vorderes Knie','Zeigt in Richtung der Zehen',J.vknie],
+   ['Hüfte','Gerade nach unten, beide Hüftseiten zeigen nach vorn',J.huefte],
+   ['Rücken','Aufrecht, eine leichte Vorlage ist in Ordnung',J.ruecken],
+   ['Arme','Hängen locker oder Hände in der Hüfte',J.haende],
+   ['Atmung','Beim Runtergehen einatmen, beim Hochkommen ausatmen',J.atmung]],
+  feel:'Kräftige Arbeit im vorderen Bein und Po, Dehnung vorn im hinteren Oberschenkel.'},
+ bridge:{rows:[['Füße','Hüftbreit, nah am Po, ganze Sohle am Boden. Der Druck geht über die Fersen',J.fuesse],
+   ['Knie','Bleiben hüftbreit, weder auseinander noch zusammen',J.knie],
+   ['Hüfte','Hebt sich, bis Schultern, Hüfte und Knie eine Linie bilden',J.huefte],
+   ['Rücken','Nicht ins Hohlkreuz drücken, die Rippen bleiben unten',J.ruecken],
+   ['Arme','Liegen neben dem Körper, Handflächen auf der Matte',J.haende],
+   ['Kopf','Liegt auf, Blick zur Decke',J.kopf],
+   ['Atmung','Beim Hochdrücken ausatmen, beim Absenken einatmen',J.atmung]],
+  feel:'Du spürst es im Po, nicht im unteren Rücken. Wenn hinten im Oberschenkel Krämpfe kommen: Füße näher an den Po.'},
+ goodmorning:{rows:[['Füße','Hüftbreit, Gewicht auf den Fersen',J.fuesse],
+   ['Knie','Leicht gebeugt, und sie bleiben die ganze Zeit so',J.knie],
+   ['Hüfte','Schiebt nach hinten, als würdest du mit dem Po eine Tür schließen',J.huefte],
+   ['Rücken','Bleibt gerade wie ein Brett. Nur so weit runter, bis die Dehnung kommt',J.ruecken],
+   ['Hände','Locker am Hinterkopf, Ellbogen offen',[7,8,9,10]],
+   ['Kopf','In Verlängerung des Rückens, Blick zum Boden',J.kopf],
+   ['Atmung','Beim Vorbeugen einatmen, beim Aufrichten ausatmen',J.atmung]],
+  feel:'Dehnung hinten in den Oberschenkeln, beim Aufrichten arbeitet der Po.'},
+ swing:{rows:[['Füße','Etwas breiter als hüftbreit, fest am Boden',J.fuesse],
+   ['Knie','Leicht gebeugt, kein tiefes Kniebeugen',J.knie],
+   ['Hüfte','Der Motor: nach hinten schieben, dann kräftig nach vorn strecken',J.huefte],
+   ['Rücken','Gerade, auch unten im Schwung',J.ruecken],
+   ['Arme','Locker wie Seile. Die Kugel schwingt durch den Hüftschub hoch, nicht durch die Arme',J.arme],
+   ['Kopf','Blick unten schräg nach vorn, oben geradeaus',J.kopf],
+   ['Atmung','Hinten einatmen, beim Hochschwingen kräftig ausatmen',J.atmung]],
+  feel:'Po und Beinrückseite arbeiten, die Arme fühlen sich fast mühelos an.'},
+ kneepush:{rows:[['Knie','Hinter der Hüfte auf der Matte, bei Bedarf gepolstert',J.knie],
+   ['Hände','Etwas breiter als die Schultern, Finger zeigen nach vorn',J.haende],
+   ['Ellbogen','Etwa 45° zum Körper, nicht weit zur Seite',J.ellbogen],
+   ['Hüfte','In einer Linie mit Knien und Schultern, der Po bleibt unten',J.huefte],
+   ['Rücken','Gerade, Bauch fest',J.ruecken],
+   ['Kopf','Blick knapp vor die Hände, Nacken lang',J.kopf],
+   ['Atmung','Beim Runtergehen einatmen, beim Hochdrücken ausatmen',J.atmung]],
+  feel:'Brust, Schultern und die Rückseite der Oberarme arbeiten.',
+  easier:'Leichter: Hände erhöht auf eine Bank, ein Sofa oder an die Wand.'},
+ pushup:{rows:[['Hände','Etwas breiter als die Schultern, die ganze Hand drückt in den Boden',J.haende],
+   ['Ellbogen','Etwa 45° zum Körper',J.ellbogen],
+   ['Füße','Hüftbreit auf den Zehenspitzen',J.fuesse],
+   ['Hüfte','In einer Linie mit Schultern und Fersen',J.huefte],
+   ['Rücken','Gerade wie ein Brett, Bauch und Po fest',J.ruecken],
+   ['Kopf','Blick knapp vor die Hände, Nacken lang',J.kopf],
+   ['Atmung','Beim Runtergehen einatmen, beim Hochdrücken ausatmen',J.atmung]],
+  feel:'Brust und Arme arbeiten, der Rumpf hält ohne durchzuhängen.',
+  easier:'Leichter: Hände erhöht, z. B. auf die Sofakante, oder zurück zu Knie-Liegestützen.'},
+ superman:{rows:[['Arme','Lang nach vorn, Daumen zeigen zur Decke',J.arme],
+   ['Schultern','Schulterblätter nach hinten unten ziehen',J.schultern],
+   ['Rücken','Hebt sich nur leicht, kein starkes Hohlkreuz',J.ruecken],
+   ['Beine','Gestreckt, heben gleichzeitig leicht ab',J.beine],
+   ['Kopf','Blick zur Matte, Nacken lang. Nicht nach vorn schauen',J.kopf],
+   ['Atmung','Beim Anheben ausatmen, oben ruhig weiteratmen',J.atmung]],
+  feel:'Arbeit zwischen den Schulterblättern und entlang des Rückens, nicht im Nacken.',
+  easier:'Leichter: nur die Arme oder nur die Beine anheben.'},
+ bandrow:{rows:[['Füße','Hüftbreit, einen Schritt zurück, bis das Band Spannung hat',J.fuesse],
+   ['Knie','Weich, nicht durchgestreckt',J.knie],
+   ['Ellbogen','Ziehen nah am Körper nach hinten',J.ellbogen],
+   ['Schultern','Bleiben unten, Schulterblätter zusammenziehen',J.schultern],
+   ['Rücken','Aufrecht, nicht zurücklehnen',J.ruecken],
+   ['Hände','Greifen locker, Daumen oben',J.haende],
+   ['Atmung','Beim Ziehen ausatmen, beim Zurückgehen einatmen',J.atmung]],
+  feel:'Arbeit zwischen den Schulterblättern, nicht im Nacken.'},
+ tablerow:{rows:[['Hände','Tischkante schulterbreit fest greifen',J.haende],
+   ['Füße','Fersen auf dem Boden, Beine gestreckt',J.fuesse],
+   ['Hüfte','Oben, in einer Linie mit Schultern und Fersen',J.huefte],
+   ['Ellbogen','Ziehen nah am Körper Richtung Boden',J.ellbogen],
+   ['Schultern','Erst die Schulterblätter zusammen, dann ziehen die Arme',J.schultern],
+   ['Kopf','In Verlängerung des Körpers',J.kopf],
+   ['Atmung','Beim Hochziehen ausatmen, beim Absenken einatmen',J.atmung]],
+  feel:'Rücken und Arme ziehen, der Körper bleibt steif wie ein Brett.',
+  easier:'Leichter: Knie anwinkeln, Füße flach aufstellen.'},
+ pullapart:{rows:[['Füße','Hüftbreit, Knie weich',J.fuesse],
+   ['Arme','Gestreckt vor der Brust, Ellbogen nur ganz leicht gebeugt',J.arme],
+   ['Hände','Band schulterbreit greifen, Daumen oben',J.haende],
+   ['Schultern','Bleiben unten, weg von den Ohren',J.schultern],
+   ['Rücken','Aufrecht, die Rippen bleiben unten',J.ruecken],
+   ['Atmung','Beim Auseinanderziehen ausatmen, beim Zurückgehen einatmen',J.atmung]],
+  feel:'Hinten an den Schultern und zwischen den Schulterblättern.',
+  easier:'Leichter: Hände weiter auseinander greifen.'},
+ deadbug:{rows:[['Rücken','Der untere Rücken bleibt die ganze Zeit an der Matte',J.ruecken],
+   ['Arme','Senkrecht zur Decke, über den Schultern',J.arme],
+   ['Knie','Im rechten Winkel über der Hüfte',J.knie],
+   ['Beine','Das gestreckte Bein sinkt nur so tief, wie der Rücken liegen bleibt',J.beine],
+   ['Kopf','Liegt entspannt auf',J.kopf],
+   ['Atmung','Beim Strecken ausatmen, beim Zurückholen einatmen',J.atmung]],
+  feel:'Tief im Bauch. Der untere Rücken bleibt entspannt.',
+  easier:'Leichter: nur das Bein strecken, die Arme bleiben oben.'},
+ plank:{rows:[['Ellbogen','Unter den Schultern, Unterarme parallel',J.ellbogen],
+   ['Füße','Hüftbreit auf den Zehenspitzen',J.fuesse],
+   ['Hüfte','In einer Linie mit Schultern und Fersen',J.huefte],
+   ['Rücken','Gerade. Bauchnabel nach innen, Po fest',J.ruecken],
+   ['Schultern','Weg von den Ohren, den Boden aktiv wegdrücken',J.schultern],
+   ['Kopf','Blick zur Matte, Nacken lang',J.kopf],
+   ['Atmung','Ruhig weiteratmen, nicht die Luft anhalten',J.atmung]],
+  feel:'Der ganze Bauch arbeitet, nicht der untere Rücken.',
+  easier:'Leichter: Knie auf der Matte ablegen.'},
+ sideplank:{rows:[['Ellbogen','Unter der Schulter, Unterarm zeigt nach vorn',[7]],
+   ['Füße','Übereinander, oder versetzt für mehr Halt',J.fuesse],
+   ['Hüfte','Oben halten, nicht durchhängen lassen',J.huefte],
+   ['Rücken','Der Körper bildet eine Linie von Kopf bis Fuß',J.ruecken],
+   ['Oberer Arm','Zur Decke gestreckt oder Hand an der Hüfte',J.arm2],
+   ['Kopf','In Verlängerung, Blick nach vorn',J.kopf],
+   ['Atmung','Ruhig weiteratmen',J.atmung]],
+  feel:'Seitlicher Bauch und die untere Hüftseite arbeiten.',
+  easier:'Leichter: das untere Knie auf der Matte ablegen.'},
+ climber:{rows:[['Hände','Unter den Schultern',J.haende],
+   ['Hüfte','Tief, etwa auf Schulterhöhe',J.huefte],
+   ['Knie','Abwechselnd Richtung Brust',J.knie],
+   ['Füße','Tippen nur leicht auf, möglichst leise',J.fuesse],
+   ['Rücken','Gerade, Bauch fest',J.ruecken],
+   ['Kopf','Blick zur Matte',J.kopf],
+   ['Atmung','Gleichmäßig im Rhythmus',J.atmung]],
+  feel:'Bauch und Schultern arbeiten, der Puls geht hoch.',
+  easier:'Leichter: langsamer, die Füße abwechselnd nach vorn setzen statt springen.'},
+ jack:{rows:[['Füße','Landen weich auf den Fußballen',J.fuesse],
+   ['Knie','Leicht federnd',J.knie],
+   ['Arme','Gestreckt über den Kopf und wieder zurück',J.arme],
+   ['Rücken','Aufrecht',J.ruecken],
+   ['Kopf','Blick geradeaus',J.kopf],
+   ['Atmung','Gleichmäßig, nicht hecheln',J.atmung]],
+  feel:'Der Puls geht hoch, die Landung bleibt leise.',
+  easier:'Leichter: ohne Sprung, abwechselnd ein Bein zur Seite setzen.'}
+};
+
 /* ---------- Speicher ---------- */
-const APP_VERSION='3c.1';
+const APP_VERSION='3d.1';
 const KEY='mattenzeit-v1';
 const DAY=864e5;
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
@@ -556,7 +742,7 @@ function figHTML(id,anim,extra=''){
   const e=EX[id];
   return `<svg class="fig ${e.front?'front':''}" viewBox="0 -6 120 110" data-ex="${id}" ${anim?'data-anim="1"':''} ${extra} aria-hidden="true">
   <rect class="mat" x="4" y="99" width="112" height="4" rx="2"/><g class="props"></g>
-  <path class="band"/><path class="far"/><path class="near"/><circle class="head" r="6"/><path class="kbh"/><circle class="kb" r="0"/></svg>`;
+  <path class="band"/><path class="hls"/><path class="far"/><path class="near"/><circle class="head" r="6"/><path class="kbh"/><circle class="kb" r="0"/><g class="hlg"></g></svg>`;
 }
 function initFig(svg){
   const e=EX[svg.dataset.ex];let p='';
@@ -575,6 +761,10 @@ function drawFig(svg,t){
   if(e.kb){const x=a1[0],y=a1[1];const kb=svg.querySelector('.kb');kb.setAttribute('r','5.6');
     kb.setAttribute('cx',x.toFixed(1));kb.setAttribute('cy',(y+8).toFixed(1));
     svg.querySelector('.kbh').setAttribute('d',`M${(x-3.6).toFixed(1)} ${(y+4).toFixed(1)} Q${x.toFixed(1)} ${(y-3).toFixed(1)} ${(x+3.6).toFixed(1)} ${(y+4).toFixed(1)}`);}
+  const hk=svg.dataset.hl;const hlg=svg.querySelector('.hlg'),hls=svg.querySelector('.hls');
+  if(hlg){const B=BODY[svg.dataset.ex];const row=hk!==undefined&&hk!==''&&B?B.rows[+hk]:null;const js=row?row[2]:[];
+    hlg.innerHTML=js.filter(j=>j!=='spine').map(j=>`<circle class="hlj" cx="${P[j][0].toFixed(1)}" cy="${P[j][1].toFixed(1)}" r="${j===0?10:6.5}"/>`).join('');
+    hls.setAttribute('d',js.includes('spine')?`M${f(n)} Q${f(c)} ${f(p)}`:'');}
   if(e.band==='door')svg.querySelector('.band').setAttribute('d',`M${f(a1)} L114 38`);
   if(e.band==='hands')svg.querySelector('.band').setAttribute('d',`M${f(a1)} L${f(a2)}`);
 }
@@ -1016,16 +1206,32 @@ function vDetail(){
   const ht=holdText(e,holdOf(id));
   return `<div class="sheet-back" data-act="closedetail"><div class="sheet" role="dialog" aria-label="${esc(e.n)}" data-stop="1">
     <div class="row between"><div class="stack" style="gap:4px">${patHTML(e.p)}<h2>${e.n}</h2></div><button class="iconbtn" data-act="closedetail">Schließen</button></div>
-    <div class="stage">${figHTML(id,true)}</div>
+    <div class="stage${BODY[id]?' stick':''}">${figHTML(id,true,hlAttr(id))}</div>
     <div class="row wrap">${e.p!=='mobility'&&e.p!=='cardio'?statusTag(st.status):''}
       <span class="small muted">Aktuell: <b class="num">${doseText(e,st.dose)}</b> ${doseUnit(e)}${ht?`, ${ht}`:''}</span></div>
     <div class="setup"><b>Ausgangsposition:</b> ${esc(e.setup)}</div>
-    ${e.easier?`<p class="small">${esc(e.easier)}</p>`:''}
     <div class="stack" style="gap:6px"><h3>Darauf achten</h3><ul class="clean ok">${e.cues.map(c=>`<li>${esc(c)}</li>`).join('')}</ul></div>
+    ${bodyHTML(id,true)}
     <div class="stack" style="gap:6px"><h3>Typische Fehler</h3><ul class="clean x">${e.bad.map(c=>`<li>${esc(c)}</li>`).join('')}</ul></div>
     ${e.eq?`<p class="small"><b>Ausrüstung:</b> ${e.eq.map(q=>EQN[q]).join(', ')}${available(id)?'':' <span style="color:var(--warn)">(nicht vorhanden)</span>'}</p>`:'<p class="small"><b>Ausrüstung:</b> nur Matte</p>'}
     ${easier||harder?`<div class="row wrap">${easier?`<button class="btn" data-act="detail" data-v="${easier}">Leichter: ${EX[easier].n}</button>`:''}${harder?`<button class="btn" data-act="detail" data-v="${harder}">Schwerer: ${EX[harder].n}</button>`:''}</div>`:''}
   </div></div>`;
+}
+
+/* Körper-Checkliste: aufklappbar; Antippen einer Zeile hebt die Stelle an der Figur hervor */
+function hlAttr(id){const k=ui.hl&&ui.hl[id];return k!==undefined&&k!==null?`data-hl="${k}"`:'';}
+function bodyHTML(id,open){
+  const B=BODY[id];const e=EX[id];if(!B)return e.easier?`<p class="small">${esc(e.easier)}</p>`:'';
+  ui.bodyOpen=ui.bodyOpen||{};const isOpen=open||ui.bodyOpen[id];const k=ui.hl&&ui.hl[id];
+  const easier=B.easier||e.easier;
+  const head=open?'<h3>Genau erklärt</h3>':`<button class="btn ghost" data-act="bodytoggle" data-v="${id}" aria-expanded="${!!isOpen}" style="align-self:flex-start;padding-left:0">${isOpen?'Genau erklärt ▴':'Genau erklärt: Kopf bis Fuß ▾'}</button>`;
+  if(!isOpen)return head;
+  return `<div class="stack" style="gap:8px">${head}
+    <p class="small muted">Tippe auf einen Bereich, dann leuchtet die Stelle an der Figur auf.</p>
+    <div class="bodylist">${B.rows.map(([a,t,js],i)=>js.length?`<button class="bodyrow" data-act="hl" data-v="${id}" data-k="${i}" aria-pressed="${String(k)===String(i)}"><b>${esc(a)}</b><span>${esc(t)}</span></button>`
+      :`<div class="bodyrow static"><b>${esc(a)}</b><span>${esc(t)}</span></div>`).join('')}</div>
+    <div class="feel"><b>Woran du merkst, dass es richtig ist:</b> ${esc(B.feel)}</div>
+    ${easier?`<p class="small">${esc(easier)}</p>`:''}</div>`;
 }
 
 /* ---------- Einweisung ---------- */
@@ -1042,10 +1248,10 @@ function vBrief(){
   ${b.ids.map(id=>{const e=EX[id],st=exState(id);const it=ui.plan.items.find(x=>x.id===id);const ht=holdText(e,it?it.hold:0);
     return `<section class="card">
     <div class="row between"><div class="stack" style="gap:4px">${patHTML(e.p)}<h2>${e.n}</h2></div>${statusTag(st.status)}</div>
-    <div class="stage">${figHTML(id,true,b.slow===id?'data-slow="1"':'')}</div>
+    <div class="stage${ui.bodyOpen&&ui.bodyOpen[id]?' stick':''}">${figHTML(id,true,(b.slow===id?'data-slow="1" ':'')+hlAttr(id))}</div>
     <div class="setup"><b>Ausgangsposition:</b> ${esc(e.setup)}</div>
-    ${e.easier?`<p class="small">${esc(e.easier)}</p>`:''}
     <ul class="clean ok">${e.cues.map(c=>`<li>${esc(c)}</li>`).join('')}</ul>
+    ${bodyHTML(id,false)}
     ${ht?`<p class="small"><b>Halten:</b> ${ht}. Die Stimme zählt mit.</p>`:''}
     <p class="small muted"><b>Vermeiden:</b> ${e.bad.map(esc).join(' · ')}</p>
     <div class="row wrap">
@@ -1533,6 +1739,10 @@ document.addEventListener('click',ev=>{
     rhythm(){state.rhythm=!state.rhythm;save();ui.plan=null;render();},
     headset(){state.headset=!state.headset;save();render();},
     tempo(){state.tempo=v;save();ui.plan=null;render();},
+    bodytoggle(){ui.bodyOpen=ui.bodyOpen||{};ui.bodyOpen[v]=!ui.bodyOpen[v];render();},
+    hl(){ui.hl=ui.hl||{};const k=+t.dataset.k;ui.hl[v]=ui.hl[v]===k?null:k;
+      const card=t.closest('.card,.sheet');if(card){card.querySelectorAll(`svg.fig[data-ex="${v}"]`).forEach(svg=>{if(ui.hl[v]===null)delete svg.dataset.hl;else svg.dataset.hl=k;drawFig(svg,.7);});
+        card.querySelectorAll(`.bodyrow[data-v="${v}"]`).forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.k===String(ui.hl[v]))));}},
     detail(){ui.detail=v;render();},
     closedetail(){ui.detail=null;render();},
     filter(){ui.filter=v;render();},
