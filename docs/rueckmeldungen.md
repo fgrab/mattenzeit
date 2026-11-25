@@ -12,14 +12,19 @@ Aufwand: **S** = klein, **M** = mittel, **L** = groß. Die Nummern in Klammern v
 | # | Punkt | Aufwand | Nutzen | Bemerkung |
 |---|---|---|---|---|
 | 1 | App-Symbol: Varianten und Startbildschirm (12) | S | niedrig | Erster Entwurf läuft |
-| 2 | Bestwerte im Alltag: gelegentlich ein Satz „so viele wie möglich“ als Mini-Test (13) | S–M | hoch | Idee aus dem Vergleich mit Freeletics |
-| 3 | Fitness-Einordnung der Testergebnisse (11) | M | hoch | Normwerte recherchieren, ggf. freiwillige Angabe zum Geschlecht |
-| 4 | Kopfhörer-Taste als „Geschafft“ (5) | M | hoch | Als Versuch in 3b eingebaut (Schalter auf „Heute“); Rückmeldung vom iPhone ausstehend |
-| 5 | „So nicht“-Figur in der Seitenansicht (2) | M | mittel | Eine Fehler-Pose pro Übung |
-| 6 | Sync mit eigenem Server auf dem NAS (7) | M–L | hoch | Braucht Docker, HTTPS und Zugriff von unterwegs |
-| 7 | Figuren in 3D mit Front- und Schrägansicht (2) | L | hoch | Erst mit 4–5 Übungen ausprobieren |
-| 8 | Hinweise mit passender Ansicht verknüpfen (2) | L | hoch | Setzt 3D voraus |
-| 9 | Sprachbefehle, Apple Health, Apple Watch, iCloud-Sync (5, 7) | L | hoch | Nur mit nativer iOS-App sinnvoll |
+| 2 | Rückmelde-Stufen klarer: „Fordernd“ (bleibt gleich) und „Zu schwer“ (weniger), Wirkung sofort anzeigen (14a) | S | hoch | Aus Training am 25.11. |
+| 3 | Halte-Ansage hochzählen statt runterzählen (14d) | S | mittel | Aus Training am 25.11. |
+| 4 | Weltbeste Dehnung genauer beschreiben (14c) | S | mittel | Aus Training am 25.11. |
+| 5 | Tempo-Stufen ruhig/normal/zügig, Liegestütze etwas zügiger (14b) | S–M | hoch | Aus Training am 25.11. |
+| 6 | Bestwerte im Alltag: gelegentlich ein Satz „so viele wie möglich“ als Mini-Test (13) | S–M | hoch | Idee aus dem Vergleich mit Freeletics |
+| 7 | Körper-Checkliste für alle Übungen (Füße, Beine, Hüfte, Rücken, Arme, Kopf) (14c) | M | hoch | Inhaltsarbeit für 20 Übungen |
+| 8 | Fitness-Einordnung der Testergebnisse (11) | M | hoch | Normwerte recherchieren, ggf. freiwillige Angabe zum Geschlecht |
+| 9 | Kopfhörer-Taste als „Geschafft“ (5) | M | hoch | Als Versuch in 3b eingebaut (Schalter auf „Heute“); Rückmeldung vom iPhone ausstehend |
+| 10 | „So nicht“-Figur in der Seitenansicht (2) | M | mittel | Eine Fehler-Pose pro Übung |
+| 11 | Sync mit eigenem Server auf dem NAS (7) | M–L | hoch | Braucht Docker, HTTPS und Zugriff von unterwegs |
+| 12 | Figuren in 3D mit Front- und Schrägansicht (2) | L | hoch | Erst mit 4–5 Übungen ausprobieren |
+| 13 | Hinweise mit passender Ansicht verknüpfen (2) | L | hoch | Setzt 3D voraus |
+| 14 | Sprachbefehle, Apple Health, Apple Watch, iCloud-Sync (5, 7) | L | hoch | Nur mit nativer iOS-App sinnvoll |
 
 ### Erledigt
 - **Prototyp 2:** Sprachansagen mit Fortschritt, Restzeit und Ausgangsposition (3, 6), Halte-Rhythmus (4), ganzer Bildschirm als „Geschafft“ (5), Profil und Einstufungstest (1)
@@ -248,4 +253,33 @@ Idee aus dem Vergleich mit Freeletics. Dort gibt es feste Workouts als Bestwert-
 - Ergebnis: neuer Bestwert wird gefeiert („Neuer Bestwert: 19 Kniebeugen, vorher 16“) und im Verlauf pro Übung gezeigt
 - Bestwerte fließen vorsichtig in die Steigerung ein (Trainingsmenge ca. 60–70 % des Bestwerts), ähnlich wie beim Einstufungstest
 - Ergänzt die großen Tests alle 4–6 Wochen, ersetzt sie nicht
+
+---
+
+## 14. Rückmeldungen aus dem Training am 25.11.
+**Status:** offen
+
+**Positiv:** Während des ganzen Trainings musste nichts angetippt werden, das Handy konnte zur Seite gelegt werden. Tempo-Coach und automatisches Weiter funktionieren wie gedacht.
+
+**a) Rückmelde-Stufen nach dem Training**
+- Gewünscht: eine Stufe zwischen „Passt“ und „Zu schwer“ für „war hart, aber nicht reduzieren“
+- Stand heute: „Zu schwer“ reduziert gar nicht, es bleibt gleich. Erst „Nicht geschafft“ reduziert. Das ist aber nicht erkennbar, die Beschriftung führt in die Irre
+- Vorschlag: Stufen „Zu leicht“ (deutlich mehr), „Passt“ (etwas mehr), „Fordernd“ (bleibt gleich), „Zu schwer“ (etwas weniger), „Nicht geschafft“ (weniger, ggf. leichtere Variante)
+- Unter der Auswahl sofort die Wirkung anzeigen: „Nächstes Mal: 13 Wiederholungen“
+
+**b) Tempo bei Liegestützen**
+- Vorgabe 2 s runter / 1 s hoch fühlte sich deutlich langsamer an als das eigene Tempo und machte die Liegestütze spürbar härter als im (damals noch freien) Einstufungstest
+- Absicht dahinter: langsameres Absenken = mehr Kontrolle und mehr Wirkung pro Wiederholung. Nicht gedacht, um herunterzuregeln. Die Startmenge stammt aber aus dem freien Test und passt deshalb nicht ganz zum langsameren Takt
+- Vorschlag: Tempo-Stufen „ruhig / normal / zügig“ als Einstellung (Standard „normal“), Liegestütze und Kniebeugen in „normal“ auf ca. 1,5 s runter / 1 s hoch
+- Beim ersten Training im Takt die Menge einmalig etwas absenken oder nach dem Training gezielt fragen „Passte das Tempo?“
+- Ab dem nächsten Einstufungstest (jetzt auch im Takt) passen Test und Training zusammen
+
+**c) Weltbeste Dehnung unklar**
+- Unklar: wie gestreckt das hintere Bein ist, wie der hintere Fuß aufliegt, wie die Hände aufliegen
+- Sofort: Beschreibung präzisieren (hinteres Bein lang, Knie vom Boden oder als leichtere Variante abgelegt, Fußballen aufgestellt; beide Hände flach innen neben dem vorderen Fuß; dann der Arm auf der Seite des vorderen Beins zur Decke)
+- Grundsätzlich: pro Übung eine **Körper-Checkliste** (Füße, Beine, Hüfte, Rücken, Arme/Hände, Kopf/Blick), in der Einweisung aufklappbar. Ergänzt später die Perspektiven aus Punkt 2
+
+**d) Halte-Ansage beim Superman**
+- „Hoch, Halten, 1, Runter“ wirkt unintuitiv, weil rückwärts gezählt wird und die Zahl kleiner ist als die Haltezeit
+- Vorschlag: hochzählen, „Hoch … halten, zwei … und runter“ (bei 2 s), „Hoch … halten, zwei, drei … und runter“ (bei 3 s). „Halten“ zählt als erste Sekunde
 
