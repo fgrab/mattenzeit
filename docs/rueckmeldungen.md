@@ -11,15 +11,18 @@ Aufwand: **S** = klein, **M** = mittel, **L** = groß. Die Nummern in Klammern v
 ### Offen, aufsteigend nach Aufwand
 | # | Punkt | Aufwand | Nutzen | Bemerkung |
 |---|---|---|---|---|
-| 1 | App-Symbol: Varianten und Startbildschirm (12) | S | niedrig | Erster Entwurf läuft |
-| 2 | Bestwerte im Alltag: gelegentlich ein Satz „so viele wie möglich“ als Mini-Test (13) | S–M | hoch | Idee aus dem Vergleich mit Freeletics |
-| 3 | Fitness-Einordnung der Testergebnisse (11) | M | hoch | Normwerte recherchieren, ggf. freiwillige Angabe zum Geschlecht |
-| 4 | Kopfhörer-Taste als „Geschafft“ (5) | M | hoch | Als Versuch in 3b eingebaut (Schalter auf „Heute“); Rückmeldung vom iPhone ausstehend |
-| 5 | „So nicht“-Figur in der Seitenansicht (2) | M | mittel | Eine Fehler-Pose pro Übung |
-| 6 | Sync mit eigenem Server auf dem NAS (7) | M–L | hoch | Braucht Docker, HTTPS und Zugriff von unterwegs |
-| 7 | Figuren in 3D mit Front- und Schrägansicht (2) | L | hoch | Erst mit 4–5 Übungen ausprobieren |
-| 8 | Hinweise mit passender Ansicht verknüpfen (2) | L | hoch | Setzt 3D voraus |
-| 9 | Sprachbefehle, Apple Health, Apple Watch, iCloud-Sync (5, 7) | L | hoch | Nur mit nativer iOS-App sinnvoll |
+| 1 | **Nächste Version:** Regelmäßige Erinnerung an die Sicherung (15) | S | hoch | Statt NAS-Sync vorerst; Sync bleibt auf der Liste |
+| 2 | Profil und Ziele direkt bearbeiten, ohne den Einstieg neu zu durchlaufen (16) | S | mittel | |
+| 3 | App-Symbol: Varianten und Startbildschirm (12) | S | niedrig | Erster Entwurf läuft |
+| 4 | Bestwerte im Alltag: gelegentlich ein Satz „so viele wie möglich“ als Mini-Test (13) | S–M | hoch | Idee aus dem Vergleich mit Freeletics |
+| 5 | Design-Überarbeitung: „Heute“ entschlacken, Einstellungen bündeln, Icon-Varianten (17) | M | mittel | Erst Entwürfe zum Vergleichen |
+| 6 | Fitness-Einordnung der Testergebnisse (11) | M | hoch | Normwerte recherchieren, ggf. freiwillige Angabe zum Geschlecht |
+| 7 | Kopfhörer-Taste als „Geschafft“ (5) | M | hoch | Als Versuch in 3b eingebaut (Schalter auf „Heute“); Rückmeldung vom iPhone ausstehend |
+| 8 | „So nicht“-Figur in der Seitenansicht (2) | M | mittel | Eine Fehler-Pose pro Übung |
+| 9 | Sync mit eigenem Server auf dem NAS (7) | M–L | hoch | Braucht Docker, HTTPS und Zugriff von unterwegs |
+| 10 | Figuren in 3D mit Front- und Schrägansicht (2) | L | hoch | Erst mit 4–5 Übungen ausprobieren |
+| 11 | Hinweise mit passender Ansicht verknüpfen (2) | L | hoch | Setzt 3D voraus |
+| 12 | Sprachbefehle, Apple Health, Apple Watch, iCloud-Sync (5, 7) | L | hoch | Nur mit nativer iOS-App sinnvoll |
 
 ### Erledigt
 - **Prototyp 3d:** Körper-Checkliste „Genau erklärt“ für alle 20 Übungen (Kopf bis Fuß inkl. Atmung), Antippen hebt die Stelle an der Figur hervor, „Woran du merkst, dass es richtig ist“ und leichtere Varianten (14c)
@@ -279,4 +282,35 @@ Idee aus dem Vergleich mit Freeletics. Dort gibt es feste Workouts als Bestwert-
 **d) Halte-Ansage beim Superman**
 - „Hoch, Halten, 1, Runter“ wirkt unintuitiv, weil rückwärts gezählt wird und die Zahl kleiner ist als die Haltezeit
 - Vorschlag: hochzählen, „Hoch … halten, zwei … und runter“ (bei 2 s), „Hoch … halten, zwei, drei … und runter“ (bei 3 s). „Halten“ zählt als erste Sekunde
+
+---
+
+## 15. Regelmäßige Erinnerung an die Sicherung
+**Status:** offen, für die nächste Version eingeplant
+
+Ersatz für den NAS-Sync, solange hauptsächlich ein Gerät genutzt wird.
+- Heute: Hinweis auf „Heute“, wenn die letzte Sicherung älter als 14 Tage ist (ab 3 Trainings)
+- Neu: Erinnerung einstellbar (wöchentlich / alle 2 Wochen / aus), Standard wöchentlich
+- Direkt nach dem Speichern des Trainings-Feedbacks: „Jetzt sichern?“ mit einem Tipp, wenn die Erinnerung fällig ist
+- Nach dem Sichern: kurze Bestätigung mit Datum; im Verlauf „Letzte Sicherung“ sichtbar (gibt es schon)
+
+---
+
+## 16. Profil und Ziele direkt bearbeiten
+**Status:** offen
+
+- Heute nur über Verlauf → Profil → „Profil bearbeiten“, das den ganzen Einstieg (4 Schritte) erneut durchläuft
+- Neu: eigener Bereich „Profil & Ziele“ zum direkten Ändern von Name, Zielen, Häufigkeit, Größe, Alter, Beschwerden
+- Änderungen wirken sofort auf den nächsten Trainingsvorschlag
+
+---
+
+## 17. Design-Überarbeitung
+**Status:** offen
+
+- „Heute“ ist inzwischen lang: Zeit, Tagesform und fünf Schalter (Leise, Sprachansage, Restzeit, Tempo, Kopfhörer) stehen vor dem eigentlichen Training
+- Idee: Training nach oben, Einstellungen in einen eigenen Bereich (z. B. Zahnrad oben rechts), auf „Heute“ nur Zeit und Tagesform
+- Wochenfortschritt sichtbarer und motivierender (z. B. Ring „2 von 3 Trainings diese Woche“)
+- Icon: 2–3 Varianten zum Vergleichen (siehe 12), auch auf dunklem Homescreen prüfen
+- Vorgehen: erst Entwürfe als Vorschau zum Vergleichen, dann umsetzen
 
