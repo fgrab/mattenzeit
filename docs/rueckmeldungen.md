@@ -8,6 +8,16 @@ Gesammelte Rückmeldungen aus den Tests. App: https://fgrab.github.io/mattenzeit
 
 Aufwand: **S** = klein, **M** = mittel, **L** = groß. Die Nummern in Klammern verweisen auf die Abschnitte unten.
 
+### Nächste Version 4.0 (beschlossen)
+Entwürfe: https://claude.ai/artifact/EhWjh17b6A27FTXxoYEz2n
+- **Startbildschirm nach Variante A** („Training zuerst“): blaue Trainingskarte mit Übungen, Dauer und Tagesform direkt darin, großer Start-Knopf
+- **Wochenring aus Variante B** statt der Tageskreise: „2 von 3 Trainings“, Minuten diese Woche, Wochen in Folge mit erreichtem Ziel
+- **„Dein Fortschritt“ darunter:** Übung mit dem größten Fortschritt seit dem Einstufungstest (mit Kurve), Bauchumfang mit Gewicht nur als Trend, „Erreicht“-Kachel (Aufstiege, neue Haltezeiten, Bestwerte), Hinweis auf den nächsten Test
+- **Einstellungen hinter dem Zahnrad** (17): Profil & Ziele direkt bearbeiten (16), Training (Tempo, Leise, Tempo vorgeben), Ansagen (Sprache, Restzeit, Kopfhörer-Taste), Startbildschirm (Körperwerte anzeigen), Daten
+- **Erinnerung an die Sicherung** wöchentlich / alle 2 Wochen / aus, „Jetzt sichern?“ nach dem Feedback, wenn fällig (15)
+- **App-Symbol Variante 2** (Kniebeuge auf Kobaltblau) für alle Größen (12)
+- **Datenlücken schließen** für saubere Kurven: tatsächlich gemachte Wiederholungen (vom Tempo-Coach gezählt), Lernsatz-Markierung und Tempo-Stufe pro Training speichern
+
 ### Offen, aufsteigend nach Aufwand
 | # | Punkt | Aufwand | Nutzen | Bemerkung |
 |---|---|---|---|---|
