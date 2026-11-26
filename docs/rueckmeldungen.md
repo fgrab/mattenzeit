@@ -8,7 +8,7 @@ Gesammelte Rückmeldungen aus den Tests. App: https://fgrab.github.io/mattenzeit
 
 Aufwand: **S** = klein, **M** = mittel, **L** = groß. Die Nummern in Klammern verweisen auf die Abschnitte unten.
 
-### Nächste Version 4.0 (beschlossen)
+### Version 4.0 ✅ umgesetzt
 Entwürfe: https://claude.ai/artifact/EhWjh17b6A27FTXxoYEz2n
 - **Startbildschirm nach Variante A** („Training zuerst“): blaue Trainingskarte mit Übungen, Dauer und Tagesform direkt darin, großer Start-Knopf
 - **Wochenring aus Variante B** statt der Tageskreise: „2 von 3 Trainings“, Minuten diese Woche, Wochen in Folge mit erreichtem Ziel
@@ -21,20 +21,17 @@ Entwürfe: https://claude.ai/artifact/EhWjh17b6A27FTXxoYEz2n
 ### Offen, aufsteigend nach Aufwand
 | # | Punkt | Aufwand | Nutzen | Bemerkung |
 |---|---|---|---|---|
-| 1 | **Nächste Version:** Regelmäßige Erinnerung an die Sicherung (15) | S | hoch | Statt NAS-Sync vorerst; Sync bleibt auf der Liste |
-| 2 | Profil und Ziele direkt bearbeiten, ohne den Einstieg neu zu durchlaufen (16) | S | mittel | |
-| 3 | App-Symbol: Varianten und Startbildschirm (12) | S | niedrig | Erster Entwurf läuft |
-| 4 | Bestwerte im Alltag: gelegentlich ein Satz „so viele wie möglich“ als Mini-Test (13) | S–M | hoch | Idee aus dem Vergleich mit Freeletics |
-| 5 | Design-Überarbeitung: „Heute“ entschlacken, Einstellungen bündeln, Icon-Varianten (17) | M | mittel | Erst Entwürfe zum Vergleichen |
-| 6 | Fitness-Einordnung der Testergebnisse (11) | M | hoch | Normwerte recherchieren, ggf. freiwillige Angabe zum Geschlecht |
-| 7 | Kopfhörer-Taste als „Geschafft“ (5) | M | hoch | Als Versuch in 3b eingebaut (Schalter auf „Heute“); Rückmeldung vom iPhone ausstehend |
-| 8 | „So nicht“-Figur in der Seitenansicht (2) | M | mittel | Eine Fehler-Pose pro Übung |
-| 9 | Sync mit eigenem Server auf dem NAS (7) | M–L | hoch | Braucht Docker, HTTPS und Zugriff von unterwegs |
-| 10 | Figuren in 3D mit Front- und Schrägansicht (2) | L | hoch | Erst mit 4–5 Übungen ausprobieren |
-| 11 | Hinweise mit passender Ansicht verknüpfen (2) | L | hoch | Setzt 3D voraus |
-| 12 | Sprachbefehle, Apple Health, Apple Watch, iCloud-Sync (5, 7) | L | hoch | Nur mit nativer iOS-App sinnvoll |
+| 1 | Bestwerte im Alltag: gelegentlich ein Satz „so viele wie möglich“ als Mini-Test (13) | S–M | hoch | Idee aus dem Vergleich mit Freeletics |
+| 2 | Fitness-Einordnung der Testergebnisse (11) | M | hoch | Normwerte recherchieren, ggf. freiwillige Angabe zum Geschlecht |
+| 3 | Kopfhörer-Taste als „Geschafft“ (5) | M | hoch | Als Versuch in 3b eingebaut (Schalter auf „Heute“); Rückmeldung vom iPhone ausstehend |
+| 4 | „So nicht“-Figur in der Seitenansicht (2) | M | mittel | Eine Fehler-Pose pro Übung |
+| 5 | Sync mit eigenem Server auf dem NAS (7) | M–L | hoch | Braucht Docker, HTTPS und Zugriff von unterwegs |
+| 6 | Figuren in 3D mit Front- und Schrägansicht (2) | L | hoch | Erst mit 4–5 Übungen ausprobieren |
+| 7 | Hinweise mit passender Ansicht verknüpfen (2) | L | hoch | Setzt 3D voraus |
+| 8 | Sprachbefehle, Apple Health, Apple Watch, iCloud-Sync (5, 7) | L | hoch | Nur mit nativer iOS-App sinnvoll |
 
 ### Erledigt
+- **Version 4.0:** neuer Startbildschirm (Training zuerst, Wochenring, Fortschritt seit dem Einstufungstest, Körperwerte mit Gewicht nur als Trend, „Erreicht“), Einstellungen hinter dem Zahnrad inkl. Profil & Ziele (16, 17), Sicherungs-Erinnerung wöchentlich/2 Wochen/aus mit „Jetzt sichern?“ nach dem Training (15), App-Symbol Kniebeuge (12), Protokoll der tatsächlich gemachten Wiederholungen, Lernsätze und Tempo pro Training
 - **Prototyp 3d:** Körper-Checkliste „Genau erklärt“ für alle 20 Übungen (Kopf bis Fuß inkl. Atmung), Antippen hebt die Stelle an der Figur hervor, „Woran du merkst, dass es richtig ist“ und leichtere Varianten (14c)
 - **Prototyp 3c:** Fünf Rückmelde-Stufen mit „Fordernd“ (bleibt gleich) und sofortiger Vorschau der Wirkung (14a), Tempo-Stufen ruhig/normal/zügig, „normal“ zügiger als vorher (14b), Weltbeste Dehnung genauer beschrieben inkl. leichterer Variante (14c), Haltezeit wird hochgezählt: „Halten, zwei, drei, und runter“ (14d)
 - **Prototyp 2:** Sprachansagen mit Fortschritt, Restzeit und Ausgangsposition (3, 6), Halte-Rhythmus (4), ganzer Bildschirm als „Geschafft“ (5), Profil und Einstufungstest (1)
@@ -234,7 +231,7 @@ Ziel: nicht aus der Übung heraus zum Handy auf dem Boden gehen müssen.
 ---
 
 ## 12. App-Symbol für die Web-App (PWA)
-**Status:** erster Entwurf umgesetzt (Glute Bridge auf Kobaltblau); Varianten und Startbildschirm offen
+**Status:** umgesetzt in 4.0 (Variante 2: Kniebeuge)
 
 **Gestaltung**
 - Passend zur App: Strichfigur auf der Matte (z. B. Glute Bridge oder Kniebeuge als klare Silhouette), Kobaltblau als Grundfarbe
@@ -296,7 +293,7 @@ Idee aus dem Vergleich mit Freeletics. Dort gibt es feste Workouts als Bestwert-
 ---
 
 ## 15. Regelmäßige Erinnerung an die Sicherung
-**Status:** offen, für die nächste Version eingeplant
+**Status:** umgesetzt in 4.0
 
 Ersatz für den NAS-Sync, solange hauptsächlich ein Gerät genutzt wird.
 - Heute: Hinweis auf „Heute“, wenn die letzte Sicherung älter als 14 Tage ist (ab 3 Trainings)
@@ -307,7 +304,7 @@ Ersatz für den NAS-Sync, solange hauptsächlich ein Gerät genutzt wird.
 ---
 
 ## 16. Profil und Ziele direkt bearbeiten
-**Status:** offen
+**Status:** umgesetzt in 4.0
 
 - Heute nur über Verlauf → Profil → „Profil bearbeiten“, das den ganzen Einstieg (4 Schritte) erneut durchläuft
 - Neu: eigener Bereich „Profil & Ziele“ zum direkten Ändern von Name, Zielen, Häufigkeit, Größe, Alter, Beschwerden
@@ -316,7 +313,7 @@ Ersatz für den NAS-Sync, solange hauptsächlich ein Gerät genutzt wird.
 ---
 
 ## 17. Design-Überarbeitung
-**Status:** offen
+**Status:** umgesetzt in 4.0 (Variante A mit Wochenring aus B, Icon Variante 2)
 
 - „Heute“ ist inzwischen lang: Zeit, Tagesform und fünf Schalter (Leise, Sprachansage, Restzeit, Tempo, Kopfhörer) stehen vor dem eigentlichen Training
 - Idee: Training nach oben, Einstellungen in einen eigenen Bereich (z. B. Zahnrad oben rechts), auf „Heute“ nur Zeit und Tagesform

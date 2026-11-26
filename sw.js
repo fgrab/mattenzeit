@@ -1,6 +1,6 @@
 /* Mattenzeit Service Worker: hält die App offline verfügbar.
    Bei jeder neuen Version VERSION erhöhen, dann erscheint in der App „Neue Version verfügbar“. */
-const VERSION = '3d.1';
+const VERSION = '4.0';
 const CACHE = 'mattenzeit-' + VERSION;
 const ASSETS = [
   './',

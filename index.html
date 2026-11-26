@@ -93,6 +93,17 @@ button:focus-visible,input:focus-visible,label:focus-within,summary:focus-visibl
 .seg.rate button[aria-pressed="true"][data-v="firm"]{color:var(--accent)}
 .seg.rate button[aria-pressed="true"][data-v="hard"]{color:var(--warn)}
 .preview{font-size:.9rem;color:var(--muted)}
+.hero{background:var(--accent);color:var(--accent-ink);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.hero h2{font-size:1.75rem}
+.eyebrow.on-accent{color:color-mix(in srgb,var(--accent-ink) 75%,var(--accent))}
+.hero .pill{background:color-mix(in srgb,var(--accent-ink) 16%,transparent);border-radius:999px;padding:4px 10px;font-size:.875rem;font-weight:500}
+.seg-on-accent{flex:1;display:flex;background:color-mix(in srgb,var(--accent-ink) 12%,transparent);border-radius:10px;padding:3px;gap:3px}
+.seg-on-accent button{flex:1;border:0;background:transparent;color:color-mix(in srgb,var(--accent-ink) 82%,var(--accent));border-radius:8px;padding:8px 0;font-weight:600;font-size:.875rem;min-width:0}
+.seg-on-accent button[aria-pressed="true"]{background:var(--accent-ink);color:var(--accent)}
+.hero-start{background:var(--accent-ink);color:var(--accent);border:0}
+.hero-more{background:transparent;border:0;color:color-mix(in srgb,var(--accent-ink) 82%,var(--accent));font-weight:600;font-size:.875rem;padding:0;align-self:center}
+.iconbtn.gear{width:44px;height:44px;display:flex;align-items:center;justify-content:center;padding:0}
+button.banner{font:inherit;color:inherit;cursor:pointer}
 .bodylist{display:flex;flex-direction:column;gap:2px}
 .bodyrow{display:grid;grid-template-columns:104px 1fr;gap:10px;text-align:left;background:transparent;border:0;border-radius:10px;padding:8px 8px;font-size:.92rem;width:100%}
 .bodyrow b{font-weight:600}
@@ -591,7 +602,7 @@ const BODY={
 };
 
 /* ---------- Speicher ---------- */
-const APP_VERSION='3d.1';
+const APP_VERSION='4.0';
 const KEY='mattenzeit-v1';
 const DAY=864e5;
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
@@ -823,10 +834,10 @@ const patHTML=p=>`<span class="pat"><i style="background:var(--p-${p})"></i>${PA
 const seg=(act,opts,cur,extra='',cls='')=>`<div class="seg ${cls}" role="group">${opts.map(([v,l])=>`<button data-act="${act}" data-v="${v}" ${extra} aria-pressed="${String(v)===String(cur)}">${l}</button>`).join('')}</div>`;
 
 function render(){
-  const full=['brief','player','feedback','summary','onboard','test','testdone'].includes(view);
+  const full=['brief','player','feedback','summary','onboard','test','testdone','settings'].includes(view);
   $nav.hidden=full;
   $nav.querySelectorAll('button').forEach(b=>b.setAttribute('aria-current',b.dataset.v===view?'page':'false'));
-  const fn={today:vToday,library:vLibrary,progress:vProgress,gear:vGear,brief:vBrief,player:vPlayer,feedback:vFeedback,summary:vSummary,
+  const fn={settings:vSettings,today:vToday,library:vLibrary,progress:vProgress,gear:vGear,brief:vBrief,player:vPlayer,feedback:vFeedback,summary:vSummary,
     onboard:vOnboard,test:vTest,testdone:vTestDone}[view];
   $app.innerHTML=fn()+(ui.detail?vDetail():'');
   const up=document.getElementById('update');if(up)up.hidden=!(ui.waiting&&!['player','test'].includes(view));
@@ -1039,6 +1050,7 @@ function applyTest(){
   if(R.reach){const v=R.reach.v;const stiff=['knee','shin'].includes(v);state.flags.mobility=stiff;
     out.push({t:'Vorbeuge',v:REACHS[v],c:stiff?'Beinrückseite eher fest: Mobilitätsübungen kommen öfter dran.':'Gute Beweglichkeit in der Beinrückseite.'});}
   const rec={id:uid(),ts:now,date:new Date(now).toISOString(),results:R};
+  addEvent('test',prevTest?'Wiederholungstest gemacht':'Einstufungstest gemacht');
   state.tests.push(rec);
   state.sessions.push({id:uid(),ts:now,date:new Date(now).toISOString(),min:10,rpe:7,type:'test',items});
   save();keepAwake(false);headsetOff();ui.plan=null;ui.testOut=out;ui.testCmp=prevTest?compareTests(prevTest,rec):null;ui.tdMeasure=null;go('testdone');
@@ -1095,57 +1107,174 @@ function vTestDone(){
 }
 
 /* ---------- Heute ---------- */
-function backupDue(){const n=state.sessions.filter(x=>!x.example).length;if(state.example||n<3)return false;
-  return !state.lastBackup||Date.now()-new Date(state.lastBackup).getTime()>14*DAY;}
+function backupEvery(){const v=state.backupEvery;return v===undefined?7:v;}
+function backupDue(){const n=state.sessions.filter(x=>!x.example).length;if(state.example||n<3||!backupEvery())return false;
+  return !state.lastBackup||Date.now()-new Date(state.lastBackup).getTime()>backupEvery()*DAY;}
+
+/* ---------- Fortschritt für den Startbildschirm ---------- */
+function weekStart(t){const d=new Date(t);const wd=(d.getDay()+6)%7;d.setHours(0,0,0,0);return d.getTime()-wd*DAY;}
+function weekStats(){
+  const freq=state.body.freq||3;const ws=weekStart(Date.now());
+  const real=state.sessions.filter(x=>!x.example);
+  const inWeek=(from)=>real.filter(x=>{const t=x.ts||new Date(x.date).getTime();return t>=from&&t<from+7*DAY;});
+  const cur=inWeek(ws);let streak=0;
+  for(let w=1;w<60;w++){if(inWeek(ws-w*7*DAY).length>=freq)streak++;else break;}
+  if(cur.length>=freq)streak++;
+  return {n:cur.length,freq,min:cur.reduce((a,x)=>a+(x.min||0),0),streak};
+}
+function ringSVG(n,freq){const r=50,C=2*Math.PI*r,f=Math.min(1,n/freq);
+  return `<svg width="104" height="104" viewBox="0 0 120 120" role="img" aria-label="${n} von ${freq} Trainings diese Woche" style="flex:none">
+    <circle cx="60" cy="60" r="${r}" fill="none" stroke="var(--accent-soft)" stroke-width="14"></circle>
+    ${f>0?`<circle cx="60" cy="60" r="${r}" fill="none" stroke="var(--accent)" stroke-width="14" stroke-linecap="round" stroke-dasharray="${(C*f).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 60 60)"></circle>`:''}
+    <text x="60" y="60" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="34" fill="var(--ink)">${n}/${freq}</text>
+    <text x="60" y="82" text-anchor="middle" font-family="Barlow, sans-serif" font-size="13" fill="var(--muted)">Trainings</text></svg>`;}
+/* Verlauf einer Übung: Trainingsmenge pro Training seit dem ersten Test (bzw. seit Beginn) */
+function exSeries(id){
+  const lastTest=state.tests[0];const from=lastTest?(lastTest.ts||new Date(lastTest.date).getTime())-DAY:0;
+  return state.sessions.filter(x=>!x.example&&x.type!=='test'&&(x.ts||new Date(x.date).getTime())>=from)
+    .flatMap(x=>x.items.filter(i=>i.id===id).map(i=>({t:x.ts||new Date(x.date).getTime(),v:i.dose})));
+}
+function bestProgress(){
+  let best=null;
+  Object.keys(state.ex).forEach(id=>{const e=EX[id];if(!e||e.hidden||!MAIN.includes(e.p))return;
+    const ser=exSeries(id);if(ser.length<2)return;const a=ser[0].v,b=exState(id).dose;if(b<=a)return;
+    const g=(b-a)/a;if(!best||g>best.g)best={id,a,b,g,ser};});
+  return best;
+}
+function sparkSVG(ser,w,h){
+  const vs=ser.map(x=>x.v);const lo=Math.min(...vs),hi=Math.max(...vs);const n=vs.length;
+  const X=i=>2+(w-6)*(n===1?1:i/(n-1)),Y=v=>h-4-(h-10)*(hi===lo?.5:(v-lo)/(hi-lo));
+  const pts=vs.map((v,i)=>`${X(i).toFixed(1)} ${Y(v).toFixed(1)}`);
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true" style="flex:1;min-width:0;max-width:${w}px">
+    <path d="M${pts[0]} L${pts.join(' L')} L${X(n-1).toFixed(1)} ${h} L2 ${h} Z" fill="var(--accent-soft)"></path>
+    <path d="M${pts.join(' L')}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    <circle cx="${X(n-1).toFixed(1)}" cy="${Y(vs[n-1]).toFixed(1)}" r="4" fill="var(--accent)"></circle></svg>`;}
+function weightTrend(){const ms=state.body.measures.filter(m=>m.weight!=null);if(ms.length<2)return null;
+  const d=ms[ms.length-1].weight-ms[0].weight;
+  if(Math.abs(d)<0.5)return {t:'stabil',k:'same'};
+  const word=Math.abs(d)<2?'leicht ':'';
+  return d<0?{t:word+'fallend',k:hasGoal('abnehmen')?'good':'same',down:true}:{t:word+'steigend',k:hasGoal('abnehmen')?'warn':'same',down:false};}
+function progressHTML(){
+  const tiles=[];const bp=bestProgress();const e=bp&&EX[bp.id];
+  if(bp){const pct=Math.round(bp.g*100);
+    tiles.push(`<section class="card" style="gap:8px"><div class="row between" style="align-items:flex-start">
+      <div class="stack" style="gap:2px"><span class="eyebrow">${state.tests.length?'Seit dem Einstufungstest':'Seit Beginn'}</span><b style="font-size:1.05rem">${e.n}${e.u==='sec'?'':' pro Satz'}</b></div>
+      <span class="tag" style="background:color-mix(in srgb,var(--good) 15%,transparent);color:var(--good);font-size:.85rem">+${pct} %</span></div>
+      <div class="row" style="align-items:flex-end;gap:14px"><span class="weight num" style="font-size:2.5rem">${doseText(e,bp.a)} → ${doseText(e,bp.b)}</span>${sparkSVG(bp.ser.concat([{v:bp.b}]),150,48)}</div>
+      <span class="small muted">${bp.ser.length} Trainings</span></section>`);}
+  const half=[];
+  if(state.showBody!==false){const ms=state.body.measures;const wm=ms.filter(m=>m.waist!=null);const wt=weightTrend();
+    if(wm.length||wt){const a=wm[0],b=wm[wm.length-1];const d=a&&b?+(b.waist-a.waist).toFixed(1):0;
+      half.push(`<section class="card" style="gap:6px;padding:14px"><span class="eyebrow">Bauchumfang</span>
+        ${b?`<span class="weight num" style="font-size:2rem">${String(b.waist).replace('.',',')} cm</span>
+        ${wm.length>1?`<span class="small" style="font-weight:600;color:${d<0?'var(--good)':d>0?'var(--warn)':'var(--muted)'}">${d>0?'+':''}${String(d).replace('.',',')} cm seit ${new Date(a.date).toLocaleDateString('de-DE',{day:'numeric',month:'numeric'})}</span>`:'<span class="small muted">Erste Messung</span>'}`:'<span class="small muted">Noch nicht gemessen</span>'}
+        ${wt?`<div class="row small" style="border-top:1px solid var(--line);padding-top:8px;gap:6px">${trendIcon(wt)}<span>Gewicht: <b>${wt.t}</b></span></div>`:''}</section>`);}}
+  const ev=(state.events||[]).filter(x=>x.kind!=='test'&&Date.now()-x.ts<21*DAY).slice(-1)[0];
+  if(ev)half.push(`<section class="card" style="gap:6px;padding:14px"><span class="eyebrow">Erreicht</span>
+      <span style="font-family:var(--f-display);font-weight:700;font-size:1.35rem;line-height:1.1">${esc(ev.text)}</span>
+      <span class="small muted">${new Date(ev.ts).toLocaleDateString('de-DE',{weekday:'long'})}</span></section>`);
+  else{const n=state.sessions.filter(x=>!x.example).length;
+    half.push(`<section class="card" style="gap:6px;padding:14px"><span class="eyebrow">Insgesamt</span>
+      <span class="weight num" style="font-size:2rem">${n}</span><span class="small muted">${n===1?'Training':'Trainings'} mit Mattenzeit</span></section>`);}
+  if(half.length===1)tiles.push(half[0]);
+  else if(half.length)tiles.push(`<div class="grid2">${half.join('')}</div>`);
+  const lt=state.tests[state.tests.length-1];
+  if(lt){const due=Math.ceil(((lt.ts||new Date(lt.date).getTime())+28*DAY-Date.now())/DAY);
+    tiles.push(`<button class="banner" data-act="${due<=0?'teststart':'tab'}" data-v="progress" style="border:0;text-align:left;width:100%;align-items:center">
+      <span><b>${due<=0?'Wiederholungstest fällig.':`Nächster Einstufungstest in ${due} ${due===1?'Tag':'Tagen'}.`}</b> ${due<=0?'Jetzt testen und vergleichen.':'Dann siehst du den Vergleich.'}</span><span aria-hidden="true">›</span></button>`);}
+  else tiles.push(`<button class="banner" data-act="teststart" style="border:0;text-align:left;width:100%;align-items:center"><span><b>Noch kein Einstufungstest.</b> 10 Minuten, danach passt der Plan genauer und du siehst deinen Fortschritt.</span><span aria-hidden="true">›</span></button>`);
+  return tiles.join('');
+}
+function trendIcon(wt){const c=wt.k==='good'?'var(--good)':wt.k==='warn'?'var(--warn)':'var(--muted)';
+  const d=wt.t==='stabil'?'M4 12h16M15 7l5 5-5 5':wt.down?'M4 7l7 7 4-4 5 5M20 10v5h-5':'M4 17l7-7 4 4 5-5M20 14V9h-5';
+  return `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"></path></svg>`;}
+
 function vToday(){
   if(!ui.plan)ui.plan=buildPlan(ui.minutes);
   const plan=ui.plan;const d=new Date();
   const dateStr=d.toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'});
   const nNew=plan.items.filter(i=>exState(i.id).status==='new').length;
   const nLearn=plan.items.filter(i=>exState(i.id).status==='learning').length;
+  const h=d.getHours();const greet=h<11?'Guten Morgen':h<18?'Hallo':'Guten Abend';
+  const hello=state.body.name?`${greet}, ${esc(state.body.name)}`:greet;
+  const r=recs();const W=weekStats();
   const rows=[];
   if(plan.warmup)rows.push(planRow(plan.warmup,`1 × ${doseText(EX[plan.warmup],EX[plan.warmup].start)}`,'Aufwärmen',0));
   plan.items.forEach(it=>rows.push(planRow(it.id,`${it.sets} × ${doseText(EX[it.id],it.dose)}`,null,it.hold)));
   if(plan.finisher)rows.push(planRow(plan.finisher,`1 × ${doseText(EX[plan.finisher],EX[plan.finisher].start)}`,'Finisher',0));
   if(plan.cooldown)rows.push(planRow(plan.cooldown,`1 × ${doseText(EX[plan.cooldown],EX[plan.cooldown].start)}`,'Abschluss',0));
-  const r=recs();
-  const hello=state.body.name?`Hallo ${esc(state.body.name)}`:'Heute auf der Matte';
-  const lastTest=state.tests[state.tests.length-1];
-  const testDue=lastTest&&Date.now()-new Date(lastTest.date).getTime()>28*DAY;
+  const sub=(act,opts,cur)=>`<div class="seg seg-on-accent" role="group">${opts.map(([v,l])=>`<button data-act="${act}" data-v="${v}" aria-pressed="${String(v)===String(cur)}">${l}</button>`).join('')}</div>`;
   return `
-  <header class="stack" style="gap:4px"><span class="eyebrow">${esc(dateStr)}</span><h1>${hello}</h1></header>
-  ${state.example?`<div class="banner"><span>Du siehst Beispieldaten: 4 Wochen nur Kniebeugen und Liegestütze. Mit dem Einstufungstest startest du mit deinen eigenen Werten.</span><button class="btn ghost small" data-act="obrestart">Einrichten</button></div>`:''}
-  ${!state.example&&!state.tests.length?`<div class="banner"><span>Du trainierst mit Standardwerten. Der Einstufungstest (10 Min.) macht den Plan genauer.</span><button class="btn ghost small" data-act="teststart">Testen</button></div>`:''}
-  ${backupDue()?`<div class="banner"><span>${state.lastBackup?`Deine letzte Sicherung ist ${Math.floor((Date.now()-new Date(state.lastBackup).getTime())/DAY)} Tage alt.`:'Du hast deine Trainingsdaten noch nie gesichert.'} Eine Sicherung schützt vor Datenverlust.</span><button class="btn ghost small" data-act="backup">Sichern</button></div>`:''}
-  ${testDue?`<div class="banner"><span>Dein letzter Test ist über 4 Wochen her. Zeit für einen Vergleich?</span><button class="btn ghost small" data-act="teststart">Testen</button></div>`:''}
-  <section class="card">
-    <div class="stack" style="gap:8px"><span class="eyebrow">Zeit</span>${seg('minutes',[['7','7 Min.'],['15','15 Min.'],['25','25 Min.']],String(ui.minutes))}</div>
-    <div class="stack" style="gap:8px"><span class="eyebrow">Wie fühlst du dich?</span>${seg('energy',[['tired','Müde'],['normal','Normal'],['fit','Fit']],state.energy)}
-      <p class="small muted">In der iOS-Version kommt dieser Wert automatisch aus Apple Health (Schlaf, Herzfrequenzvariabilität). Bei „Müde“ wird es eine Runde weniger.</p></div>
-    <div class="stack" style="gap:8px"><span class="eyebrow">Ansagen</span><div class="row wrap">
-      <button class="chip" data-act="quiet" aria-pressed="${state.profile.quiet}">Leise, ohne Sprünge</button>
-      <button class="chip" data-act="voice" aria-pressed="${state.voice}">Sprachansage</button>
-      <button class="chip" data-act="timecalls" aria-pressed="${state.timeCalls}">Restzeit ansagen</button>
-      <button class="chip" data-act="rhythm" aria-pressed="${state.rhythm}">Tempo vorgeben</button>
-      <button class="chip" data-act="headset" aria-pressed="${!!state.headset}">Kopfhörer-Taste (Versuch)</button></div>
-      ${state.rhythm?`<div class="stack" style="gap:6px"><span class="small"><b>Tempo</b></span>${seg('tempo',[['ruhig','Ruhig'],['normal','Normal'],['zuegig','Zügig']],state.tempo||'normal')}
-        <p class="small muted">Die Stimme sagt jede Wiederholung an („Runter … Hoch“) und geht am Ende des Satzes automatisch weiter. „Ruhig“ ist langsamer und dadurch härter, „Zügig“ näher am freien Tempo. Dehnübungen bleiben immer ruhig.</p></div>`:''}
-      ${state.headset?'<p class="small muted">Kopfhörer-Taste: Einmal auf den AirPod tippen oder die Taste am Kabel drücken heißt „Geschafft“ bzw. „Weiter“. Das ist ein Versuch. Sag Bescheid, ob es bei dir klappt.</p>':''}</div>
+  <header class="row between" style="align-items:flex-start">
+    <div class="stack" style="gap:4px"><span class="eyebrow">${esc(dateStr)}</span><h1>${hello}</h1></div>
+    <button class="iconbtn gear" data-act="tab" data-v="settings" aria-label="Einstellungen"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"></path></svg></button>
+  </header>
+  ${state.example?`<div class="banner"><span>Du siehst Beispieldaten. Mit dem Einstufungstest startest du mit deinen eigenen Werten.</span><button class="btn ghost small" data-act="obrestart">Einrichten</button></div>`:''}
+  ${backupDue()?`<div class="banner"><span>${state.lastBackup?`Deine letzte Sicherung ist ${Math.floor((Date.now()-new Date(state.lastBackup).getTime())/DAY)} Tage alt.`:'Du hast deine Trainingsdaten noch nie gesichert.'}</span><button class="btn ghost small" data-act="backup">Sichern</button></div>`:''}
+  <section class="hero">
+    <div class="row between" style="align-items:baseline"><span class="eyebrow on-accent">Dein Training heute</span><span class="dose num">ca. ${plan.est} Min.</span></div>
+    <h2>${plan.items.length} Übungen · ${plan.rounds} ${plan.rounds===1?'Runde':'Runden'}</h2>
+    <div class="row wrap" style="gap:6px">${plan.items.map(it=>`<span class="pill">${EX[it.id].n}${exState(it.id).status==='new'?' · neu':''}</span>`).join('')}</div>
+    <div class="row" style="gap:8px" aria-label="Dauer in Minuten und Tagesform">${sub('minutes',[['7','7'],['15','15'],['25','25']],String(ui.minutes))}${sub('energy',[['tired','Müde'],['normal','Normal'],['fit','Fit']],state.energy)}</div>
+    <button class="btn block big hero-start" data-act="start">${nNew+nLearn?`Erst ${nNew+nLearn} ${nNew+nLearn===1?'Übung':'Übungen'} kennenlernen`:'Training starten'}</button>
+    <button class="hero-more" data-act="plantoggle" aria-expanded="${!!ui.planOpen}">${ui.planOpen?'Plan ausblenden ▴':'Plan im Detail ▾'}</button>
   </section>
-  <section class="card">
-    <div class="row between"><h2>Dein Training</h2><span class="dose num">ca. ${plan.est} Min.</span></div>
-    <p class="small muted">${plan.items.length} Übungen im Zirkel, ${plan.rounds} ${plan.rounds===1?'Runde':'Runden'}. Ausgewählt nach dem, was in den letzten 7 Tagen zu kurz kam.${nNew?` ${nNew} ${nNew===1?'Übung ist':'Übungen sind'} neu, höchstens ${plan.newLimit} pro Einheit.`:''}${plan.skipped.length?` Wegen deiner Beschwerden ausgelassen: ${plan.skipped.join(', ')}.`:''}</p>
-    <div>${rows.join('')}</div>
-    <button class="btn primary block big" data-act="start">${nNew+nLearn?`Erst ${nNew+nLearn} ${nNew+nLearn===1?'Übung':'Übungen'} kennenlernen`:'Training starten'}</button>
+  ${ui.planOpen?`<section class="card"><p class="small muted">Im Zirkel, ausgewählt nach dem, was in den letzten 7 Tagen zu kurz kam.${nNew?` Höchstens ${plan.newLimit} neue Übungen pro Einheit.`:''}${plan.skipped.length?` Wegen deiner Beschwerden ausgelassen: ${plan.skipped.join(', ')}.`:''}</p><div>${rows.join('')}</div></section>`:''}
+  <section class="card" style="flex-direction:row;align-items:center;gap:18px">
+    ${ringSVG(W.n,W.freq)}
+    <div class="stack" style="gap:10px;min-width:0">
+      <div class="stack" style="gap:0"><span class="weight num" style="font-size:1.7rem">${W.min} Min.</span><span class="small muted">trainiert diese Woche</span></div>
+      <div class="stack" style="gap:0">${W.streak?`<span class="weight num" style="font-size:1.7rem">${W.streak} ${W.streak===1?'Woche':'Wochen'}</span><span class="small muted">in Folge dein Wochenziel geschafft</span>`
+        :`<span class="weight num" style="font-size:1.7rem">${Math.max(0,W.freq-W.n)} ${W.freq-W.n===1?'Training':'Trainings'}</span><span class="small muted">${W.n>=W.freq?'Wochenziel geschafft':'fehlen noch bis Sonntag'}</span>`}</div>
+    </div>
   </section>
-  <section class="card">
-    <div class="row between"><h3>Balance, letzte 7 Tage</h3><button class="btn ghost small" data-act="tab" data-v="progress">Verlauf</button></div>
-    ${balanceHTML(setsByPattern(since(7)))}
-  </section>
-  ${r.length?`<section class="card"><div class="row between"><h3>Geräte-Empfehlung</h3><span class="tag learning">${r.length}</span></div>
-    <p class="small">${esc(r[0].short)}</p><button class="btn block" data-act="tab" data-v="gear">Begründung ansehen</button></section>`:''}
+  <div class="row between" style="align-items:baseline;margin-top:4px"><h2>Dein Fortschritt</h2><button class="btn ghost small" data-act="tab" data-v="progress">Alle Verläufe</button></div>
+  ${progressHTML()}
+  ${r.length?`<button class="banner" data-act="tab" data-v="gear" style="border:0;text-align:left;width:100%;align-items:center"><span><b>Geräte-Empfehlung:</b> ${esc(r[0].short)}</span><span aria-hidden="true">›</span></button>`:''}
   `;
 }
+
+/* ---------- Einstellungen ---------- */
+function vSettings(){
+  const B=state.body,P=state.profile;
+  const tg=(act,on,title,sub)=>`<label class="switch"><span class="stack" style="gap:0"><b>${title}</b>${sub?`<span class="small muted">${sub}</span>`:''}</span><input type="checkbox" data-act="${act}" ${on?'checked':''}></label>`;
+  const lb=state.lastBackup?new Date(state.lastBackup):null;
+  return `<header class="row" style="gap:10px"><button class="iconbtn" data-act="tab" data-v="today" aria-label="Zurück">‹ Zurück</button><h1>Einstellungen</h1></header>
+  <span class="eyebrow">Profil &amp; Ziele</span>
+  <section class="card">
+    <div class="field"><label for="st-name">Name</label><input type="text" id="st-name" data-set="name" value="${esc(B.name||'')}" placeholder="Vorname"></div>
+    <div class="stack" style="gap:8px"><b>Ziele</b><div class="row wrap">${Object.entries(GOALS).map(([k,l])=>{const i=goals().indexOf(k);return `<button class="chip" data-act="goal" data-v="${k}" aria-pressed="${i>=0}">${i===0&&goals().length>1?'★ ':''}${l}</button>`;}).join('')}</div>
+      <p class="small muted">Bis zu 3. Das zuerst gewählte (★) ist dein Schwerpunkt.</p></div>
+    <div class="stack" style="gap:8px"><b>Trainings pro Woche</b>${seg('freq',[['2','2-mal'],['3','3-mal'],['4','4-mal']],String(B.freq||3))}</div>
+    <div class="grid2"><div class="field"><label for="st-height">Größe (cm)</label><input type="number" inputmode="numeric" id="st-height" data-set="height" value="${B.height??''}"></div>
+      <div class="field"><label for="st-age">Alter</label><input type="number" inputmode="numeric" id="st-age" data-set="age" value="${B.age??''}"></div></div>
+    <div class="stack" style="gap:8px"><b>Beschwerden an …</b><div class="row wrap">${Object.entries(LIMITS).map(([k,l])=>`<button class="chip" data-act="limit" data-v="${k}" aria-pressed="${B.limits.includes(k)}">${l}</button>`).join('')}</div></div>
+  </section>
+  <span class="eyebrow">Training</span>
+  <section class="card">
+    ${tg('set-rhythm',state.rhythm,'Tempo vorgeben','Stimme sagt jede Wiederholung an, geht automatisch weiter')}
+    ${state.rhythm?`<div class="stack" style="gap:8px"><b>Tempo</b>${seg('tempo',[['ruhig','Ruhig'],['normal','Normal'],['zuegig','Zügig']],state.tempo||'normal')}
+      <p class="small muted">„Ruhig“ ist langsamer und dadurch härter. Dehnübungen bleiben immer ruhig, der Test hat ein festes Tempo.</p></div>`:''}
+    ${tg('set-quiet',P.quiet,'Leise, ohne Sprünge','Für Nachbarn und späte Stunden')}
+  </section>
+  <span class="eyebrow">Ansagen</span>
+  <section class="card">
+    ${tg('set-voice',state.voice,'Sprachansage','')}
+    ${tg('set-time',state.timeCalls,'Restzeit ansagen','„Noch 20 Sekunden“ in Pausen und Zeitübungen')}
+    ${tg('set-headset',state.headset,'Kopfhörer-Taste (Versuch)','Tippen am AirPod oder Taste am Kabel heißt „Weiter“')}
+  </section>
+  <span class="eyebrow">Startbildschirm</span>
+  <section class="card">${tg('set-body',state.showBody!==false,'Körperwerte anzeigen','Bauchumfang, Gewicht nur als Trend')}</section>
+  <span class="eyebrow">Daten</span>
+  <section class="card">
+    <div class="stack" style="gap:8px"><b>An Sicherung erinnern</b>${seg('backupevery',[['7','Wöchentlich'],['14','2 Wochen'],['0','Aus']],String(backupEvery()))}</div>
+    <p class="small muted">Letzte Sicherung: ${lb?lb.toLocaleDateString('de-DE'):'noch keine'}</p>
+    <div class="row"><button class="btn primary grow" data-act="backup">Jetzt sichern</button><button class="btn grow" data-act="tab" data-v="progress" data-anchor="daten">Mehr im Verlauf</button></div>
+    ${ui.dataMsg?`<p class="small" style="color:var(--good)">${esc(ui.dataMsg)}</p>`:''}
+  </section>
+  <p class="small muted" style="text-align:center">Version ${APP_VERSION}${isStandalone()?' · als App gestartet':''}</p>`;
+}
+
 function planRow(id,dose,label,hold){
   const e=EX[id],st=exState(id);
   const tag=label?`<span class="tag known">${label}</span>`:e.p==='mobility'||e.p==='cardio'?'':statusTag(st.status);
@@ -1324,7 +1453,7 @@ function beginWork(){
   if(e.u==='sec'){r.end=Date.now()+s.dose*1000;say(`Los. ${r.cue}.`,{interrupt:true});r.events=timeEvents(s.dose,false);}
   else if(state.rhythm&&tempoOf(s.id,s.hold)){r.end=0;say('Los.',{interrupt:true});
     r.rh=makePacer({id:s.id,tempo:tempoOf(s.id,s.hold),reps:e.alt?s.dose*2:s.dose,sides:e.sides&&!e.alt,
-      onDone:()=>{beep(1300,.25);r.rh=null;startNext();}});}
+      onDone:()=>{beep(1300,.25);startNext();}});}
   else{r.end=0;say(`Los. ${r.cue}.`,{interrupt:true});}
   render();
 }
@@ -1347,7 +1476,7 @@ function pacerStep(p){
   if(p.ph==='go'){if(T.hold>0)setPh('hold',T.hold*1000,'Halten');else setPh('back',T.back*1000,W[1]);return;}
   if(p.ph==='hold'){setPh('back',T.back*1000,`Und ${W[1].toLowerCase()}`);return;}
   if(p.ph==='back'){
-    p.counted=p.rep;
+    p.counted=p.rep;p.done=(p.done||0)+1;
     if(p.test){say(String(p.rep),{interrupt:true,rate:1.15});}
     if(p.rep>=p.reps){
       if(p.sides&&p.side===1){p.side=2;p.rep=1;beep(1300,.2);say('Seite wechseln.',{interrupt:true});setPh('switch',4000,null);return;}
@@ -1361,13 +1490,21 @@ function updatePacerUI(p){
   const a=document.getElementById('rhrep');if(a)a.textContent=p.test?String(p.counted):String(p.rep);
   const b=document.getElementById('rhph');if(b)b.textContent=pacerWord(p);
   const c=document.getElementById('rhside');if(c)c.textContent=p.sides?`Seite ${p.side} von 2`:'';}
-function startNext(){const r=ui.run;if(r.i>=r.steps.length-1){finishRun();return;}startRest();}
+/* Protokoll pro Satz: geplante und tatsächlich gemachte Menge (pro Seite), Lernsatz ja/nein */
+function logStep(r){
+  if(!r||r.phase!=='work')return;const s=cur(),e=EX[s.id];let done;
+  if(r.rh){done=r.rh.done||0;if(e.sides||e.alt)done=Math.round(done/2);}
+  else if(e.u==='sec'){const left=r.paused?r.left:(r.end?Math.max(0,Math.ceil((r.end-Date.now())/1000)):0);done=Math.max(0,s.dose-(r.switching?0:left));}
+  else done=s.dose;
+  r.log=r.log||[];r.log.push({id:s.id,round:s.round||0,dose:s.dose,done,learn:!!s.learn});r.rh=null;
+}
+function startNext(){const r=ui.run;logStep(r);if(r.i>=r.steps.length-1){finishRun();return;}startRest();}
 function finishRun(){clearInterval(tick);keepAwake(false);headsetOff();
   const r=ui.run;const min=Math.max(1,Math.round((Date.now()-r.started)/60000));
   say('Geschafft. Das war dein Training. Gut gemacht.',{interrupt:true});
   const ids=[...ui.plan.items.map(i=>i.id)];if(ui.plan.finisher)ids.push(ui.plan.finisher);
   const items={};ids.forEach(id=>{const st=exState(id);items[id]={rating:'ok',form:'clean',pain:false,clarity:st.status!=='known'&&EX[id].p!=='cardio'?'clear':null};});
-  ui.fb={ids,items,rpe:6,min};ui.run=null;go('feedback');}
+  ui.fb={ids,items,rpe:6,min,log:(r&&r.log)||[]};ui.run=null;go('feedback');}
 function onTick(){
   const r=ui.run;if(!r||r.paused||view!=='player')return;
   const now=Date.now();
@@ -1479,9 +1616,12 @@ function previewText(id,f){
   if(e.sides)t+=' pro Seite';
   return t;
 }
+function addEvent(kind,text,id){state.events=state.events||[];state.events.push({id:uid(),ts:Date.now(),kind,text,ex:id||null});if(state.events.length>60)state.events.splice(0,state.events.length-60);}
 function applyFeedback(){
   const fb=ui.fb;const msgs=[];
-  const items=fb.ids.map(id=>{const it=ui.plan.items.find(i=>i.id===id);return {id,sets:it?it.sets:1,dose:it?it.dose:EX[id].start,hold:it?it.hold:0,...fb.items[id]};});
+  const lg=fb.log||[];
+  const items=fb.ids.map(id=>{const it=ui.plan.items.find(i=>i.id===id);const L=lg.filter(x=>x.id===id);
+    return {id,sets:it?it.sets:1,dose:it?it.dose:EX[id].start,hold:it?it.hold:0,setsDone:L.length,done:L.reduce((a,x)=>a+x.done,0),learnSets:L.filter(x=>x.learn).length,...fb.items[id]};});
   if(ui.plan.warmup)items.unshift({id:ui.plan.warmup,sets:1,dose:EX[ui.plan.warmup].start,rating:'ok'});
   items.forEach(it=>{
     const e=EX[it.id];if(e.p==='mobility')return;
@@ -1495,10 +1635,12 @@ function applyFeedback(){
     const ch=CHAINS[e.p];const lv=ch?ch.indexOf(it.id):-1;
     if(ch&&lv>=0&&dose>=e.max&&(it.rating==='easy'||it.rating==='ok')&&!it.pain&&lv<ch.length-1){
       const nx=ch[lv+1];patch.dose=e.max;
-      if(available(nx)&&allowed(nx)){state.levels[e.p]=Math.max(state.levels[e.p]||0,lv+1);note=`Maximum erreicht. Nächste Stufe freigeschaltet: ${EX[nx].n}. Du lernst sie vor dem nächsten Training kennen.`;}
+      if(available(nx)&&allowed(nx)){state.levels[e.p]=Math.max(state.levels[e.p]||0,lv+1);addEvent('levelup',`Aufgestiegen: ${EX[nx].n} ist freigeschaltet`,nx);note=`Maximum erreicht. Nächste Stufe freigeschaltet: ${EX[nx].n}. Du lernst sie vor dem nächsten Training kennen.`;}
       else{note=`Maximum erreicht. Die nächste Stufe (${EX[nx].n}) braucht: ${(EX[nx].eq||[]).map(q=>EQN[q]).join(', ')||'grünes Licht bei deinen Beschwerden'}.`;if((EX[nx].eq||[]).includes('kb'))state.flags.needKb=true;}
     }
     if(ch&&lv>0&&it.rating==='fail'&&dose<e.start*.7){state.levels[e.p]=lv-1;note=`Nächstes Mal wieder ${EX[ch[lv-1]].n}, bis die Kraft da ist.`;}
+    if(e.hold&&hold>oldHold)addEvent('hold',`${e.n} hält jetzt ${hold} s`,it.id);
+    if(status==='known'&&st.status!=='known')addEvent('known',`${e.n} sitzt jetzt sicher`,it.id);
     setEx(it.id,patch);
     let dtext=patch.dose!==old?`${doseText(e,old)} → ${doseText(e,patch.dose)}${e.u==='sec'?'':' Wdh.'}`:`bleibt bei ${doseText(e,old)}${e.u==='sec'?'':' Wdh.'}`;
     if(e.hold&&hold!==oldHold)dtext+=` · Halten ${oldHold} → ${hold} s`;
@@ -1507,7 +1649,8 @@ function applyFeedback(){
   });
   const t=Date.now();
   state.sessions.push({id:uid(),ts:t,date:new Date(t).toISOString(),min:fb.min,rpe:fb.rpe,
-    items:items.map(({id,sets,dose,hold,rating,form,pain,clarity})=>({id,sets,dose,hold,rating,form,pain,clarity}))});
+    tempo:state.rhythm?(state.tempo||'normal'):'frei',
+    items:items.map(({id,sets,dose,hold,setsDone,done,learnSets,rating,form,pain,clarity})=>({id,sets,dose,hold,setsDone,done,learnSets,rating,form,pain,clarity}))});
   if(fb.rpe>=9)msgs.push({kind:'warn',title:'Sehr anstrengend',line:'Gesamt 9–10 von 10',note:'Wenn das zweimal in Folge passiert, wird das nächste Training etwas leichter.'});
   save();ui.summary=msgs;ui.plan=null;go('summary');
 }
@@ -1516,6 +1659,9 @@ function vSummary(){
   return `<header class="stack" style="gap:6px"><span class="eyebrow">Gespeichert</span><h1>Das ändert sich beim nächsten Mal</h1></header>
   <section class="card"><div>${ui.summary.map(m=>`<div class="change"><span class="dot" style="background:${col[m.kind]}"></span>
     <div class="stack" style="gap:2px"><div><b>${esc(m.title)}</b> <span class="num muted">${esc(m.line)}</span></div>${m.note?`<p class="small">${esc(m.note)}</p>`:''}</div></div>`).join('')}</div></section>
+  ${backupDue()?`<section class="card" style="border-color:var(--accent)"><h3>Jetzt sichern?</h3>
+    <p class="small muted">${state.lastBackup?`Deine letzte Sicherung ist ${Math.floor((Date.now()-new Date(state.lastBackup).getTime())/DAY)} Tage alt.`:'Du hast noch keine Sicherung.'} Ein Tipp, dann im Teilen-Menü „In Dateien sichern“ wählen.</p>
+    <button class="btn primary" data-act="backup">Sicherung erstellen</button>${ui.dataMsg?`<p class="small" style="color:var(--good)">${esc(ui.dataMsg)}</p>`:''}</section>`:''}
   <section class="card"><h3>In Apple Health</h3><p class="small muted">In der iOS-Version würde jetzt ein Workout „Funktionales Krafttraining“ mit Dauer und geschätzten aktiven Kalorien gespeichert, damit sich auch deine Ringe füllen.</p></section>
   <button class="btn primary block big" data-act="tab" data-v="today">Fertig</button>`;
 }
@@ -1681,7 +1827,7 @@ function headsetPress(a){
   ui.hsLast={a,t:Date.now()};
   if(view==='player'&&ui.run){const r=ui.run;
     if(r.phase==='rest'){beginWork();}
-    else{if(r.paused)r.paused=false;r.rh=null;beep(1300,.2);startNext();}
+    else{if(r.paused)r.paused=false;beep(1300,.2);startNext();}
   }else if(view==='test'&&ui.test){const T=ui.test,t=curTest();
     if(T.phase==='run'&&t.mode!=='timer')testStop();}
   refreshHeadsetLine();
@@ -1739,6 +1885,8 @@ document.addEventListener('click',ev=>{
     rhythm(){state.rhythm=!state.rhythm;save();ui.plan=null;render();},
     headset(){state.headset=!state.headset;save();render();},
     tempo(){state.tempo=v;save();ui.plan=null;render();},
+    plantoggle(){ui.planOpen=!ui.planOpen;render();},
+    backupevery(){state.backupEvery=+v;save();render();},
     bodytoggle(){ui.bodyOpen=ui.bodyOpen||{};ui.bodyOpen[v]=!ui.bodyOpen[v];render();},
     hl(){ui.hl=ui.hl||{};const k=+t.dataset.k;ui.hl[v]=ui.hl[v]===k?null:k;
       const card=t.closest('.card,.sheet');if(card){card.querySelectorAll(`svg.fig[data-ex="${v}"]`).forEach(svg=>{if(ui.hl[v]===null)delete svg.dataset.hl;else svg.dataset.hl=k;drawFig(svg,.7);});
@@ -1752,7 +1900,7 @@ document.addEventListener('click',ev=>{
     okbrief(){ui.brief.ok[v]=!ui.brief.ok[v];render();},
     replace(){replaceInPlan(v);render();},
     run(){startRun();go('player');},
-    done(){const r=ui.run;if(r.paused)r.paused=false;r.rh=null;beep(1300,.2);startNext();},
+    done(){const r=ui.run;if(r.paused)r.paused=false;beep(1300,.2);startNext();},
     skiprest(){beginWork();},
     plus10(){ui.run.end+=10000;onTick();},
     pause(){const r=ui.run;if(r.paused){r.end=Date.now()+r.left*1000;r.paused=false;}else{r.left=Math.max(0,Math.ceil((r.end-Date.now())/1000));r.paused=true;}render();},
@@ -1820,6 +1968,12 @@ document.addEventListener('change',ev=>{
   const t=ev.target;
   if(t.id==='importfile'&&t.files&&t.files[0]){const r=new FileReader();r.onload=()=>parseImport(String(r.result));r.readAsText(t.files[0]);return;}
   if(t.dataset&&t.dataset.act==='eq'){state.profile[t.dataset.v]=t.checked;save();ui.plan=null;render();}
+  const SET={'set-rhythm':()=>{state.rhythm=t.checked;ui.plan=null;},'set-quiet':()=>{state.profile.quiet=t.checked;ui.plan=null;},
+    'set-voice':()=>{state.voice=t.checked;if(!t.checked)hush();},'set-time':()=>{state.timeCalls=t.checked;},
+    'set-headset':()=>{state.headset=t.checked;},'set-body':()=>{state.showBody=t.checked;}};
+  if(t.dataset&&SET[t.dataset.act]){SET[t.dataset.act]();save();render();return;}
+  if(t.dataset&&t.dataset.set){const k=t.dataset.set,raw=t.value.trim();
+    state.body[k]=k==='name'?raw:(raw===''?null:+raw.replace(',','.'));save();ui.plan=null;}
 });
 document.addEventListener('input',ev=>{
   if(ev.target.id==='rpe'){ui.fb.rpe=+ev.target.value;const o=document.getElementById('rpev');if(o)o.textContent=ui.fb.rpe+'/10';}
