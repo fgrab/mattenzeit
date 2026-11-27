@@ -18,6 +18,9 @@ Entwürfe: https://claude.ai/artifact/EhWjh17b6A27FTXxoYEz2n
 - **App-Symbol Variante 2** (Kniebeuge auf Kobaltblau) für alle Größen (12)
 - **Datenlücken schließen** für saubere Kurven: tatsächlich gemachte Wiederholungen (vom Tempo-Coach gezählt), Lernsatz-Markierung und Tempo-Stufe pro Training speichern
 
+### Nächste Version 4.2 (geplant, weitere Punkte aus dem nächsten Training folgen)
+- **Englisch als zweite Sprache (19):** Texte in eine Übersetzungstabelle, Sprache automatisch nach Handy-Einstellung plus Umschalter, Sprachausgabe und Zahlwörter je Sprache, alle 20 Übungen inkl. Körper-Checkliste übersetzen
+
 ### Offen, aufsteigend nach Aufwand
 | # | Punkt | Aufwand | Nutzen | Bemerkung |
 |---|---|---|---|---|
@@ -332,4 +335,18 @@ Ersatz für den NAS-Sync, solange hauptsächlich ein Gerät genutzt wird.
 3. **Haltezeiten bis 3 s:** nur noch „Halten“, Hochzählen erst ab 4 s
 4. **„Halbzeit“/„Letzte“ verschoben den Takt:** Die Ansage kam vor dem „Runter“ und verzögerte es. Jetzt: „Hoch … Halbzeit … Runter“ bzw. „Hoch … Noch eine … Runter“ mit etwas längerer Pause davor
 5. **Ausfallschritt rückwärts:** Der Takt war wie bei einer Kniebeuge gebaut, der Schritt nach hinten fehlte. Jetzt: „Schritt zurück und runter … Und hoch“ mit längerem Hinweg
+
+---
+
+## 19. Mehrsprachigkeit (Englisch)
+**Status:** für 4.2 geplant
+
+**Stand heute:** nur Deutsch, fest eingebaut. Auch auf einem englisch eingestellten iPhone ist alles deutsch; die Sprachausgabe nutzt eine deutsche Stimme (fehlt sie, liest ggf. eine englische Stimme den deutschen Text).
+
+**Umsetzung**
+- Alle Texte aus dem Code in eine Übersetzungstabelle (eine Spalte pro Sprache), damit später weitere Sprachen leicht dazukommen
+- Sprache automatisch nach Handy-Einstellung, Umschalter in den Einstellungen
+- Sprachausgabe je Sprache: Stimme, Zahlwörter („two, three“), Satzbau der Ansagen („20 seconds left“), Datumsformat
+- Inhalt übersetzen: Oberfläche, 20 Übungen mit Ausgangsposition, Hinweisen, Fehlern, Körper-Checkliste, „Woran du merkst …“, leichtere Varianten; Testbeschreibungen; Empfehlungstexte
+- Aufwand: mittel, größter Teil ist sorgfältige Übersetzung der Trainingssprache
 
