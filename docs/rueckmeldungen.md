@@ -31,6 +31,7 @@ Entwürfe: https://claude.ai/artifact/EhWjh17b6A27FTXxoYEz2n
 | 8 | Sprachbefehle, Apple Health, Apple Watch, iCloud-Sync (5, 7) | L | hoch | Nur mit nativer iOS-App sinnvoll |
 
 ### Erledigt
+- **Version 4.1:** Ton beim Start freigegeben, Wiedergabe-Modus gegen den Stummschalter, „Ton testen“ in den Einstellungen (18.1); Pause-Knopf in jeder Phase, automatische Pause beim Verlassen der App (18.2); Halten bis 3 s ohne Zählen (18.3); „Halbzeit“ und „Noch eine“ zwischen den Wiederholungen statt vor dem „Runter“ (18.4); Ausfallschritt mit eigenem Takt für den Schritt (18.5)
 - **Version 4.0:** neuer Startbildschirm (Training zuerst, Wochenring, Fortschritt seit dem Einstufungstest, Körperwerte mit Gewicht nur als Trend, „Erreicht“), Einstellungen hinter dem Zahnrad inkl. Profil & Ziele (16, 17), Sicherungs-Erinnerung wöchentlich/2 Wochen/aus mit „Jetzt sichern?“ nach dem Training (15), App-Symbol Kniebeuge (12), Protokoll der tatsächlich gemachten Wiederholungen, Lernsätze und Tempo pro Training
 - **Prototyp 3d:** Körper-Checkliste „Genau erklärt“ für alle 20 Übungen (Kopf bis Fuß inkl. Atmung), Antippen hebt die Stelle an der Figur hervor, „Woran du merkst, dass es richtig ist“ und leichtere Varianten (14c)
 - **Prototyp 3c:** Fünf Rückmelde-Stufen mit „Fordernd“ (bleibt gleich) und sofortiger Vorschau der Wirkung (14a), Tempo-Stufen ruhig/normal/zügig, „normal“ zügiger als vorher (14b), Weltbeste Dehnung genauer beschrieben inkl. leichterer Variante (14c), Haltezeit wird hochgezählt: „Halten, zwei, drei, und runter“ (14d)
@@ -320,4 +321,15 @@ Ersatz für den NAS-Sync, solange hauptsächlich ein Gerät genutzt wird.
 - Wochenfortschritt sichtbarer und motivierender (z. B. Ring „2 von 3 Trainings diese Woche“)
 - Icon: 2–3 Varianten zum Vergleichen (siehe 12), auch auf dunklem Homescreen prüfen
 - Vorgehen: erst Entwürfe als Vorschau zum Vergleichen, dann umsetzen
+
+---
+
+## 18. Rückmeldungen aus dem Training am 26.11.
+**Status:** umgesetzt in 4.1
+
+1. **Anfangs kein Ton** (Stummschalter war an): Töne wurden erst beim ersten Piepen statt beim Antippen freigegeben, und der Stummschalter galt auch für die App. Jetzt: Freigabe beim Start, Wiedergabe-Modus (Safari ab 16.4), „Ton testen“ in den Einstellungen
+2. **Pause unklar, Türklingel:** Pause gab es nur bei Zeitübungen. Jetzt: Pause-Knopf oben in jeder Phase, hält Zeit, Takt und Ansagen an; beim Fortsetzen beginnt die angefangene Wiederholung neu; automatische Pause, wenn die App verlassen wird
+3. **Haltezeiten bis 3 s:** nur noch „Halten“, Hochzählen erst ab 4 s
+4. **„Halbzeit“/„Letzte“ verschoben den Takt:** Die Ansage kam vor dem „Runter“ und verzögerte es. Jetzt: „Hoch … Halbzeit … Runter“ bzw. „Hoch … Noch eine … Runter“ mit etwas längerer Pause davor
+5. **Ausfallschritt rückwärts:** Der Takt war wie bei einer Kniebeuge gebaut, der Schritt nach hinten fehlte. Jetzt: „Schritt zurück und runter … Und hoch“ mit längerem Hinweg
 

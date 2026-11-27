@@ -416,7 +416,7 @@ const REACHS = {knee:'Knie',shin:'Schienbein',ankle:'Knöchel',floor:'Boden',pal
 const REACHO = ['knee','shin','ankle','floor','palm'];
 /* Tempo-Coach: Sekunden für Hinweg und Rückweg, Ansagewörter. Übungen mit Haltezeit nutzen ihre rh-Wörter. Swing bleibt ohne Takt. */
 const TEMPO = {
- squat:[1.5,1,'Runter','Hoch'], goblet:[1.5,1,'Runter','Hoch'], lunge:[1.5,1.2,'Runter','Hoch'], bss:[1.5,1.2,'Runter','Hoch'],
+ squat:[1.5,1,'Runter','Hoch'], goblet:[1.5,1,'Runter','Hoch'], lunge:[2.6,2,'Schritt zurück und runter','Und hoch'], bss:[1.5,1.2,'Runter','Hoch'],
  kneepush:[1.5,1,'Runter','Hoch'], pushup:[1.5,1,'Runter','Hoch'], deadbug:[1.5,1.5,'Strecken','Zurück'],
  catcow:[3,3,'Ausatmen, rund','Einatmen'], wgs:[2.5,2,'Arm hoch','Zurück'],
  bridge:[1.5,2], goodmorning:[2,1.5], superman:[1.5,2], bandrow:[1.5,2], tablerow:[1.5,2], pullapart:[1.5,2]
@@ -602,7 +602,7 @@ const BODY={
 };
 
 /* ---------- Speicher ---------- */
-const APP_VERSION='4.0';
+const APP_VERSION='4.1';
 const KEY='mattenzeit-v1';
 const DAY=864e5;
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
@@ -808,7 +808,19 @@ function say(text,opt={}){
 }
 function hush(){try{speechSynthesis.cancel();}catch(e){}}
 let actx=null;
-function beep(f=880,d=.12){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+/* iOS gibt Ton nur frei, wenn er direkt durch ein Antippen gestartet wird. Außerdem: als „Wiedergabe“ melden,
+   dann gilt der Stummschalter nicht (Safari ab 16.4). */
+let audioReady=false;
+function unlockAudio(){
+  try{if(navigator.audioSession)navigator.audioSession.type='playback';}catch(e){}
+  try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state!=='running')actx.resume();
+    const b=actx.createBuffer(1,1,22050),src=actx.createBufferSource();src.buffer=b;src.connect(actx.destination);src.start(0);}catch(e){}
+  try{if(!audioReady&&window.speechSynthesis){const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u);}}catch(e){}
+  audioReady=true;
+}
+document.addEventListener('pointerdown',()=>{if(!audioReady)unlockAudio();},{passive:true});
+function soundTest(){unlockAudio();beep(880,.15);setTimeout(()=>beep(1300,.2),250);setTimeout(()=>say('Ton ist an. So klingen die Ansagen.',{interrupt:true}),600);}
+function beep(f=880,d=.12){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume();
   const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=f;o.connect(g);g.connect(actx.destination);
   g.gain.setValueAtTime(.15,actx.currentTime);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+d);o.start();o.stop(actx.currentTime+d);}catch(e){}}
 let noSleep=null,wake=null;
@@ -921,7 +933,7 @@ function finishOnboard(){
 
 /* ---------- Einstufungstest ---------- */
 function startTest(){
-  hush();keepAwake(true);
+  unlockAudio();hush();keepAwake(true);
   ui.test={i:0,phase:'intro',choice:'pushup',val:null,results:{},lastEnd:null};ui.tdMeasureDone=false;headsetOn();
   go('test');
 }
@@ -1262,6 +1274,7 @@ function vSettings(){
     ${tg('set-voice',state.voice,'Sprachansage','')}
     ${tg('set-time',state.timeCalls,'Restzeit ansagen','„Noch 20 Sekunden“ in Pausen und Zeitübungen')}
     ${tg('set-headset',state.headset,'Kopfhörer-Taste (Versuch)','Tippen am AirPod oder Taste am Kabel heißt „Weiter“')}
+    <div class="row between" style="gap:12px"><span class="small muted">Hörst du nichts? Ton testen. Die App sollte auch bei eingeschaltetem Stummschalter zu hören sein.</span><button class="btn" data-act="soundtest" style="flex:none">Ton testen</button></div>
   </section>
   <span class="eyebrow">Startbildschirm</span>
   <section class="card">${tg('set-body',state.showBody!==false,'Körperwerte anzeigen','Bauchumfang, Gewicht nur als Trend')}</section>
@@ -1407,7 +1420,7 @@ function replaceInPlan(id){
 /* ---------- Training ---------- */
 let tick=null;
 function startRun(){
-  hush();
+  unlockAudio();hush();beep(1040,.15);
   const steps=stepsOf(ui.plan);
   ui.run={steps,i:0,phase:'rest',paused:false,left:0,started:Date.now(),fired:{},events:[],cue:''};
   keepAwake(true);headsetOn();
@@ -1464,14 +1477,13 @@ function makePacer(o){const now=Date.now();
 function pacerStep(p){
   const now=Date.now();const T=p.tempo;const W=T.words;
   if(now<p.t1){
-    if(p.ph==='hold'&&T.hold>1){const el=Math.floor((now-p.t0)/1000);
+    if(p.ph==='hold'&&T.hold>3){const el=Math.floor((now-p.t0)/1000);
       if(el>0&&el<T.hold&&!p.said[p.side+'h'+p.rep+'_'+el]){p.said[p.side+'h'+p.rep+'_'+el]=1;say(NUMW[el+1]||String(el+1),{interrupt:true,rate:1.15});}}
     return;}
   const setPh=(ph,dur,word)=>{p.ph=ph;p.t0=now;p.t1=now+dur;if(word)say(word,{interrupt:true,rate:1.1});updatePacerUI(p);};
-  const lead=()=>{if(p.test)return W[0];
-    if(p.rep===p.reps)return `Letzte. ${W[0]}`;
-    if(p.reps>=8&&p.rep===Math.floor(p.reps/2)+1)return `Halbzeit. ${W[0]}`;
-    return W[0];};
+  const lead=()=>W[0];
+  const announce=n=>{if(p.test||!isFinite(p.reps))return '';if(n===p.reps&&p.reps>1)return 'Noch eine';
+    if(p.reps>=8&&n===Math.floor(p.reps/2)+1)return 'Halbzeit';return '';};
   if(p.ph==='pre'){setPh('go',T.go*1000,lead());return;}
   if(p.ph==='go'){if(T.hold>0)setPh('hold',T.hold*1000,'Halten');else setPh('back',T.back*1000,W[1]);return;}
   if(p.ph==='hold'){setPh('back',T.back*1000,`Und ${W[1].toLowerCase()}`);return;}
@@ -1481,7 +1493,8 @@ function pacerStep(p){
     if(p.rep>=p.reps){
       if(p.sides&&p.side===1){p.side=2;p.rep=1;beep(1300,.2);say('Seite wechseln.',{interrupt:true});setPh('switch',4000,null);return;}
       p.ph='done';updatePacerUI(p);if(p.onDone)p.onDone();return;}
-    p.rep++;setPh('gap',p.test?750:400,null);return;}
+    p.rep++;const an=announce(p.rep);
+    if(an){setPh('gap',1400,null);say(an,{interrupt:true,rate:1.1});}else setPh('gap',p.test?750:400,null);return;}
   if(p.ph==='gap'){setPh('go',T.go*1000,lead());return;}
   if(p.ph==='switch'){say('Und los.',{interrupt:true});p.ph='pre';p.t0=now;p.t1=now+900;updatePacerUI(p);return;}
 }
@@ -1494,11 +1507,17 @@ function updatePacerUI(p){
 function logStep(r){
   if(!r||r.phase!=='work')return;const s=cur(),e=EX[s.id];let done;
   if(r.rh){done=r.rh.done||0;if(e.sides||e.alt)done=Math.round(done/2);}
-  else if(e.u==='sec'){const left=r.paused?r.left:(r.end?Math.max(0,Math.ceil((r.end-Date.now())/1000)):0);done=Math.max(0,s.dose-(r.switching?0:left));}
+  else if(e.u==='sec'){const left=r.end?Math.max(0,Math.ceil((r.end-(r.paused?r.pauseAt:Date.now()))/1000)):0;done=Math.max(0,s.dose-(r.switching?0:left));}
   else done=s.dose;
   r.log=r.log||[];r.log.push({id:s.id,round:s.round||0,dose:s.dose,done,learn:!!s.learn});r.rh=null;
 }
-function startNext(){const r=ui.run;logStep(r);if(r.i>=r.steps.length-1){finishRun();return;}startRest();}
+function pauseRun(){const r=ui.run;if(!r||r.paused)return;r.paused=true;r.pauseAt=Date.now();hush();render();}
+function resumeRun(){const r=ui.run;if(!r||!r.paused)return;const now=Date.now(),d=now-(r.pauseAt||now);
+  if(r.end)r.end+=d;if(r.switching)r.switching+=d;
+  if(r.rh&&r.rh.ph!=='done'){const p=r.rh;p.ph='pre';p.t0=now;p.t1=now+1800;p.said={};}
+  r.paused=false;unlockAudio();say(r.phase==='rest'?'Weiter geht\'s mit der Pause.':'Weiter geht\'s.',{interrupt:true});render();}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&view==='player'&&ui.run&&!ui.run.paused)pauseRun();});
+function startNext(){const r=ui.run;if(r.paused)r.paused=false;logStep(r);if(r.i>=r.steps.length-1){finishRun();return;}startRest();}
 function finishRun(){clearInterval(tick);keepAwake(false);headsetOff();
   const r=ui.run;const min=Math.max(1,Math.round((Date.now()-r.started)/60000));
   say('Geschafft. Das war dein Training. Gut gemacht.',{interrupt:true});
@@ -1525,16 +1544,19 @@ function onTick(){
 const fmt=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
 function vPlayer(){
   const r=ui.run,s=cur(),e=EX[s.id];const N=r.steps.length;
-  const left=r.paused?r.left:(r.end?Math.max(0,Math.ceil((r.end-Date.now())/1000)):0);
+  const left=r.end?Math.max(0,Math.ceil((r.end-(r.paused?r.pauseAt:Date.now()))/1000)):0;
   const prog=r.steps.map((_,i)=>`<span class="${i<r.i?'done':i===r.i?'cur':''}"></span>`).join('');
-  const head=`<div class="row between"><button class="iconbtn" data-act="quit">Beenden</button>
+  const head=`<div class="row between"><button class="iconbtn" data-act="pause" aria-pressed="${!!r.paused}">${r.paused?'▶ Weiter':'❚❚ Pause'}</button>
     <span class="eyebrow num">Übung ${r.i+1} von ${N}</span>
     <button class="iconbtn" data-act="voice" aria-pressed="${state.voice}">${state.voice?'Ansage an':'Ansage aus'}</button></div>${awakeHint()}<div class="prog">${prog}</div>`;
+  const paused=r.paused&&!ui.quit?`<div class="card" style="border-color:var(--accent);gap:10px"><h2>Pausiert</h2>
+    <p class="small muted">Zeit, Takt und Ansagen stehen. Beim Fortsetzen beginnt die angefangene Wiederholung neu.</p>
+    <button class="btn primary block big" data-act="pause">Fortsetzen</button><button class="btn ghost" data-act="quit">Training beenden</button></div>`:'';
   const quit=ui.quit?`<div class="card"><b>Training beenden?</b><p class="small muted">Du kannst danach trotzdem Feedback zu den Übungen geben.</p>
     <div class="row"><button class="btn grow" data-act="quitno">Weiter trainieren</button><button class="btn primary grow" data-act="quityes">Beenden</button></div></div>`:'';
   const ht=holdText(e,s.hold);
   if(r.phase==='rest'){
-    return `<div class="player phase-rest">${head}${quit}
+    return `<div class="player phase-rest">${head}${quit}${paused}
       <div class="stack" style="gap:2px;text-align:center"><span class="eyebrow">${r.i===0?'Gleich geht’s los':'Pause'}</span><div class="clock" id="clock">${fmt(left)}</div></div>
       <div class="card"><span class="eyebrow">${r.i===N-1?'Letzte Übung':'Als Nächstes'} · ${esc(s.tag)}</span>
         <div class="row" style="align-items:center"><div style="width:42%;flex:none">${figHTML(s.id,true)}</div>
@@ -1546,16 +1568,16 @@ function vPlayer(){
   }
   const top=`<div class="row between"><span class="eyebrow">${esc(s.tag)}</span>${s.learn?'<span class="tag learning">Lernsatz: langsam und sauber</span>':''}</div>`;
   if(e.u==='sec'){
-    return `<div class="player">${head}${quit}${top}
+    return `<div class="player">${head}${quit}${paused}${top}
     <h1 style="text-align:center">${e.n}</h1>
     <div class="stage">${figHTML(s.id,true)}</div>
     <div class="clock" id="clock">${r.switching?'Wechsel':fmt(left)}</div>
     <p class="small muted" style="text-align:center">${e.sides?`Seite ${r.side} von 2`:'Sekunden'}</p>
     <p class="cue">${esc(r.cue)}</p>
-    <div class="row"><button class="btn grow" data-act="pause">${r.paused?'Fortsetzen':'Pause'}</button><button class="btn primary grow big" data-act="done">Fertig</button></div>${headsetLine()}</div>`;
+    <button class="btn primary block big" data-act="done">Fertig</button>${headsetLine()}</div>`;
   }
   if(r.rh){const p=r.rh;
-    return `<div class="player">${head}${quit}${top}
+    return `<div class="player">${head}${quit}${paused}${top}
     <button class="tapzone" data-act="done"><h1>${e.n}</h1>
       <div class="stage">${figHTML(s.id,true,'data-sync="1"')}</div>
       <div class="rh" id="rhph">${pacerWord(p)}</div>
@@ -1564,7 +1586,7 @@ function vPlayer(){
       <p class="cue">${esc(r.cue)}</p>
       <span class="taphint">Die Stimme gibt den Takt vor und geht am Ende automatisch weiter. Irgendwo tippen beendet den Satz früher.</span></button>${headsetLine()}</div>`;
   }
-  return `<div class="player">${head}${quit}${top}
+  return `<div class="player">${head}${quit}${paused}${top}
     <button class="tapzone" data-act="done"><h1>${e.n}</h1>
     <div class="stage">${figHTML(s.id,true)}</div>
     <div class="target"><div class="n num">${s.dose}</div><span class="muted">${doseUnit(e)}${ht?`, ${ht}`:''}</span></div>
@@ -1823,6 +1845,7 @@ function headsetOff(){
 }
 function headsetPress(a){
   if(hsAudio&&hsAudio.paused)hsAudio.play().catch(()=>{});
+  if(view==='player'&&ui.run&&ui.run.paused){resumeRun();return;}
   try{navigator.mediaSession.playbackState='playing';}catch(e){}
   ui.hsLast={a,t:Date.now()};
   if(view==='player'&&ui.run){const r=ui.run;
@@ -1903,11 +1926,12 @@ document.addEventListener('click',ev=>{
     done(){const r=ui.run;if(r.paused)r.paused=false;beep(1300,.2);startNext();},
     skiprest(){beginWork();},
     plus10(){ui.run.end+=10000;onTick();},
-    pause(){const r=ui.run;if(r.paused){r.end=Date.now()+r.left*1000;r.paused=false;}else{r.left=Math.max(0,Math.ceil((r.end-Date.now())/1000));r.paused=true;}render();},
+    pause(){if(ui.run&&ui.run.paused)resumeRun();else pauseRun();},
+    soundtest(){soundTest();},
     voice(){state.voice=!state.voice;save();if(!state.voice)hush();render();},
     quit(){ui.quit=true;render();},
     quitno(){ui.quit=false;render();},
-    quityes(){ui.quit=false;hush();finishRun();},
+    quityes(){ui.quit=false;if(ui.run)ui.run.paused=false;hush();finishRun();},
     rate(){ui.fb.items[id].rating=v;render();},
     clarity(){ui.fb.items[id].clarity=v;render();},
     form(){const f=ui.fb.items[id];f.form=f.form==='sloppy'?'clean':'sloppy';render();},
